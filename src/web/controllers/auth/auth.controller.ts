@@ -9,7 +9,8 @@ export class AuthController {
   @HttpCode(200)
   async signIn(@Body() body: unknown) {
     //Get DTO
-    return 'Sign In';
+
+    return this.wfs.login();
   }
 
   @Post('/register')

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { InvalidCredentials } from 'src/domain/entities/user/user-errors';
 import { UserRepository } from 'src/domain/entities/user/user-repository';
 import { User } from 'src/domain/entities/user/user.entity';
 import ArgonPwHasher from 'src/infra/pwHasher';

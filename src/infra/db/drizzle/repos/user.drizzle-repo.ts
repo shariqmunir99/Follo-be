@@ -56,7 +56,7 @@ class UserDrizzleRepo extends UserRepository {
       if (!user) {
         throw new UserNotFound(id);
       }
-      return user; // Return the User as is in case of successful insertion.
+      return user[0]; // Return the User as is in case of successful insertion.
     } catch (e) {
       throw new InternalServerErrorException();
     }
@@ -67,11 +67,11 @@ class UserDrizzleRepo extends UserRepository {
       const user = await this.db
         .select()
         .from(userTbl)
-        .where(eq(userTbl.id, email));
+        .where(eq(userTbl.email, email));
       if (!user) {
         throw new UserNotFound(email);
       }
-      return user; // Return the User as is in case of successful insertion.
+      return user[0]; // Return the User as is in case of successful Fetch.
     } catch (e) {
       throw new InternalServerErrorException();
     }
