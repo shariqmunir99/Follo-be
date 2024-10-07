@@ -54,7 +54,25 @@ export class AuthWorkflows {
       jwtToken: accessToken,
     };
   }
-  async signUp() {}
+  
+  async signUp(credentials) {
+    const {username, email, password} = credentials;
+
+    // creating the new user
+    const hashed_password = await this.pwHasher.hashPassword(password);
+    const user = User.new(username, email, hashed_password);
+
+    try {
+      await this.userRepo.insert(user);
+    }
+    catch(e) {
+      throw e;
+    }
+
+    return {
+      message: "success",
+    }
+  }
   async resetPassword() {}
   async forgotPassword() {}
 }
