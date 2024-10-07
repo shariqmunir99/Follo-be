@@ -12,6 +12,7 @@ import {
   UserAlreadyExists,
   UserNotFound,
 } from 'src/domain/entities/user/user-errors';
+import { DatabaseUser } from 'src/infra/types';
 
 @Injectable()
 class UserDrizzleRepo extends UserRepository {
@@ -29,12 +30,12 @@ class UserDrizzleRepo extends UserRepository {
     }
   }
 
-  async insert(entity: User) {
+  async insert(entity: User): Promise<Omit<DatabaseUser, 'pwHashed'>> {
     try {
       const data = entity.serialize();
       await this.db.insert(userTbl).values(data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { pwHashed, ...result } = entity;
+      const { pwHashed, ...result } = data;
       return result; // Return the User as is in case of successful insertion but make sure to not return the password hash due to security concerns .
     } catch (e) {
       //If we are in this block then it means the unique constraint was violated or in simpler words, the user already exists. Now we check for which field violated the constraint.
@@ -47,7 +48,7 @@ class UserDrizzleRepo extends UserRepository {
     }
   }
 
-  async fetchById(id: string) {
+  async fetchById(id: string): Promise<DatabaseUser> {
     try {
       const user = await this.db
         .select()
@@ -62,7 +63,7 @@ class UserDrizzleRepo extends UserRepository {
     }
   }
 
-  async fetchByEmail(email: string) {
+  async fetchByEmail(email: string): Promise<DatabaseUser> {
     try {
       const user = await this.db
         .select()

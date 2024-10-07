@@ -1,29 +1,24 @@
-import {
-  AlreadyExistsError,
-  GuardViolationError,
-  NotFoundError,
-  type UUID,
-  UnauthorizedOperation,
-} from '@carbonteq/hexapp';
+import { GuardViolationError, type UUID } from '@carbonteq/hexapp';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class UserNotFound extends NotFoundError {
+export class UserNotFound extends HttpException {
   constructor(id: string) {
-    super(`User with id <${id}> doesn't exist`);
+    super(`User with id <${id}> doesn't exist`, HttpStatus.NOT_FOUND);
   }
 }
 
-export class UserAlreadyExists extends AlreadyExistsError {
+export class UserAlreadyExists extends HttpException {
   constructor(
     readonly data: string,
     field: 'email' | 'username',
   ) {
-    super(`User with this ${field} already exists`);
+    super(`User with this ${field} already exists`, HttpStatus.CONFLICT);
   }
 }
 
-export class InvalidCredentials extends UnauthorizedOperation {
+export class InvalidCredentials extends HttpException {
   constructor() {
-    super('Invalid email/password');
+    super('Invalid email/password', HttpStatus.UNAUTHORIZED);
   }
 }
 
