@@ -9,6 +9,7 @@ import { UserRepository } from 'src/domain/entities/user/user-repository';
 import { User } from 'src/domain/entities/user/user.entity';
 import ArgonPwHasher from 'src/app/services/auth-services/pwHasher.service';
 import { DatabaseUser } from 'src/infra/types';
+import { LoginDto } from '../dtos/login.dto';
 
 @Injectable()
 export class AuthWorkflows {
@@ -25,20 +26,20 @@ export class AuthWorkflows {
     return this.userRepo.insert(User.new(username, email, password));
   }
 
-  async demoLogin() {
+  async login(credentials:LoginDto) {
+   
+   
     //Get user from database
-
-    const user: DatabaseUser = await this.userRepo.fetchByEmail('s@sd.com');
+    const{email,password} =credentials
+    const user: DatabaseUser = await this.userRepo.fetchByEmail(email);
+    
     if (!user) {
-      throw new UserNotFound('s@sd.com');
+      throw new UserNotFound(email);
     }
 
-    //Compare passwords
-    console.log(user.pwHashed);
-    const isMatch = await this.pwHasher.verifyPassword(
-      user.pwHashed,
-      'asdasdasd',
-    );
+          
+    //this compares hashed and entered password pasword 
+    const isMatch = await this.pwHasher.verifyPassword(user.pwHashed,  password,);
     if (!isMatch) {
       throw new InvalidCredentials();
     }
@@ -50,10 +51,13 @@ export class AuthWorkflows {
     });
 
     return {
-      message: 'Success',
+      message: 'LogIn Successfully',
       jwtToken: accessToken,
     };
   }
+
+  
+  
   async signUp() {}
   async resetPassword() {}
   async forgotPassword() {}
