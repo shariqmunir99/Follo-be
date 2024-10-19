@@ -1,12 +1,17 @@
 import { Body, Controller, Get, HttpCode, Post, Put } from '@nestjs/common';
-import { SignUpDto } from 'src/app/dtos/auth.dto';
-import { LoginDto } from 'src/app/dtos/login.dto';
+import { LoginDto, SignUpDto } from 'src/app/dtos/auth.dto';
 import { AuthWorkflows } from 'src/app/workflows/auth-workflows';
 import { Public } from 'src/web/filters/Decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly wfs: AuthWorkflows) {}
+
+  @Public()
+  @Get('/test')
+  async demo() {
+    return this.wfs.demoSignIn();
+  }
 
   @Public()
   @Post('/login')

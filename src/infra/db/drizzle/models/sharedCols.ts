@@ -1,4 +1,3 @@
-import { UUID } from '@carbonteq/hexapp';
 import { timestamp, uuid } from 'drizzle-orm/pg-core';
 
 const sharedCols = {

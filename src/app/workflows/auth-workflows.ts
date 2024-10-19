@@ -2,14 +2,18 @@ import { Injectable } from '@nestjs/common';
 import {
   InvalidCredentials,
   UserNotFound,
-} from 'src/domain/entities/user/user-errors';
+} from 'src/domain/entities/user/user.errors';
 import { JwtService } from '@nestjs/jwt';
 
-import { UserRepository } from 'src/domain/entities/user/user-repository';
+import { UserRepository } from 'src/domain/entities/user/user.repository';
 import { User } from 'src/domain/entities/user/user.entity';
 import ArgonPwHasher from 'src/app/services/auth-services/pwHasher.service';
 import { DatabaseUser } from 'src/infra/types';
-import { LoginDto } from '../dtos/login.dto';
+import { LoginDto, SignUpDto } from '../dtos/auth.dto';
+import { ResetRequestRepository } from 'src/domain/entities/reset-requests/reset-request.repository';
+import { VerifyRequestRepository } from 'src/domain/entities/verify-requests/verify-request.repository';
+import { ResetRequest } from 'src/domain/entities/reset-requests/reset-request.entity';
+import { VerifyRequest } from 'src/domain/entities/verify-requests/verify-request.entity';
 
 @Injectable()
 export class AuthWorkflows {
@@ -17,12 +21,24 @@ export class AuthWorkflows {
     private readonly userRepo: UserRepository,
     private readonly pwHasher: ArgonPwHasher,
     private readonly jwtService: JwtService,
+    private readonly resetReqRepo: ResetRequestRepository,
+    private readonly verifyReqRepo: VerifyRequestRepository,
   ) {}
 
   async demoSignIn() {
     const email = 's@sd.com';
     const username = 'sharyboi';
     const password = await this.pwHasher.hashPassword('asdasdasd');
+    const user: DatabaseUser = await this.userRepo.fetchByEmail(email);
+    console.log(user);
+    const resReq = ResetRequest.new(user.id);
+    const verReq = VerifyRequest.new(user.id);
+    const resultResReq = await this.resetReqRepo.insert(resReq);
+    const resultVerReq = await this.verifyReqRepo.insert(verReq);
+    return {
+      resetReq: resultResReq,
+      verifyReq: resultVerReq,
+    };
     return this.userRepo.insert(User.new(username, email, password));
   }
 
@@ -48,26 +64,23 @@ export class AuthWorkflows {
     });
 
     return {
-      message: 'LogIn Successfully',
+      message: 'Success',
       jwtToken: accessToken,
     };
   }
 
-  async signUp(credentials) {
+  async signUp(credentials: SignUpDto) {
     const { username, email, password } = credentials;
 
     // creating the new user
     const hashed_password = await this.pwHasher.hashPassword(password);
     const user = User.new(username, email, hashed_password);
 
-    try {
-      await this.userRepo.insert(user);
-    } catch (e) {
-      throw e;
-    }
+    const result = await this.userRepo.insert(user);
 
     return {
       message: 'success',
+      result: result,
     };
   }
   async resetPassword() {}

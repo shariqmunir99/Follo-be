@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthWorkflows } from 'src/app/workflows/auth-workflows';
-import { DbModule } from '../db/db-module';
+import { DbModule } from '../db/db.module';
 import { HashingServiceProvider } from '../../app/services/auth-services/pwHasher.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';

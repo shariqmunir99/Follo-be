@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserRepository } from 'src/domain/entities/user/user-repository';
-import { UserNotFound } from 'src/domain/entities/user/user-errors';
+import { UserRepository } from 'src/domain/entities/user/user.repository';
+import { UserNotFound } from 'src/domain/entities/user/user.errors';
 import { JwtPayload } from 'src/infra/types';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 

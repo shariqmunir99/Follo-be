@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   Provider,
 } from '@nestjs/common';
-import { UserRepository } from 'src/domain/entities/user/user-repository';
+import { UserRepository } from 'src/domain/entities/user/user.repository';
 import { DrizzleDB, InjectDb } from '../db-connection';
 import { User } from 'src/domain/entities/user/user.entity';
 import { userTbl } from '../models/user.model';
@@ -11,7 +11,7 @@ import { eq } from 'drizzle-orm';
 import {
   UserAlreadyExists,
   UserNotFound,
-} from 'src/domain/entities/user/user-errors';
+} from 'src/domain/entities/user/user.errors';
 import { DatabaseUser } from 'src/infra/types';
 
 @Injectable()
@@ -25,7 +25,7 @@ class UserDrizzleRepo extends UserRepository {
     try {
       await this.db.update(userTbl).set(data).where(eq(userTbl.id, entity.id));
       return entity; // Return the User as is in case of successful Updation.
-    } catch (e) {
+    } catch {
       throw new InternalServerErrorException();
     }
   }
