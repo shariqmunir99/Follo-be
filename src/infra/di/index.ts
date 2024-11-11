@@ -6,8 +6,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from 'src/app/services/auth-services/jwt-strategy.service';
 import { JwtAuthGuard } from 'src/web/filters/Guards/AuthGuard';
+import { EmailServiceProvider } from 'src/app/services/auth-services/email.service';
 
-const BASE_PROVIDERS = [HashingServiceProvider]; //TODO: Add JWTService and EmailService later.
+const BASE_PROVIDERS = [HashingServiceProvider, EmailServiceProvider]; //TODO: Add JWTService and EmailService later.
 
 @Module({
   providers: BASE_PROVIDERS,

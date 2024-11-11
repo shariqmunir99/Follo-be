@@ -14,6 +14,7 @@ import { ResetRequestRepository } from 'src/domain/entities/reset-requests/reset
 import { VerifyRequestRepository } from 'src/domain/entities/verify-requests/verify-request.repository';
 import { ResetRequest } from 'src/domain/entities/reset-requests/reset-request.entity';
 import { VerifyRequest } from 'src/domain/entities/verify-requests/verify-request.entity';
+import { EmailJSMailService } from '../services/auth-services/email.service';
 
 @Injectable()
 export class AuthWorkflows {
@@ -23,6 +24,7 @@ export class AuthWorkflows {
     private readonly jwtService: JwtService,
     private readonly resetReqRepo: ResetRequestRepository,
     private readonly verifyReqRepo: VerifyRequestRepository,
+    private readonly emailService: EmailJSMailService,
   ) {}
 
   async demoSignIn() {
@@ -75,6 +77,12 @@ export class AuthWorkflows {
     // creating the new user
     const hashed_password = await this.pwHasher.hashPassword(password);
     const user = User.new(username, email, hashed_password);
+
+    await this.emailService.sendVerifyEmail({
+      user_name: username,
+      user_email: email,
+      href: 'https://example.com',
+    });
 
     const result = await this.userRepo.insert(user);
 
