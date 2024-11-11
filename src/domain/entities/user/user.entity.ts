@@ -10,34 +10,41 @@ export interface IUser extends IEntity {
   email: string;
   pwHashed: string;
   isVerified: boolean;
+  roleID: string;
 }
 export type SerializedUser = SimpleSerialized<IUser>;
-type UserUpdateData = Omitt<IUser, 'id' | 'createdAt' | 'username'>;
+type UserUpdateData = Omitt<IUser, 'id' | 'createdAt' | 'email' | 'roleID'>;
 
 export class User extends BaseEntity implements IUser {
-  email: string;
   pwHashed: string;
   isVerified: boolean;
+  username;
   private constructor(
-    readonly username: string,
-    email: string,
+    username: string,
+    readonly email: string,
     pwHashed: string,
     isVerified: boolean,
+    readonly roleID: string,
   ) {
     super();
-    this.email = email;
+    this.username = username;
     this.pwHashed = pwHashed;
     this.isVerified = isVerified;
   }
 
-  static new(username: string, email: string, pwHashed: string) {
-    return new User(username, email, pwHashed, false);
+  static new(
+    username: string,
+    email: string,
+    pwHashed: string,
+    roleID: string,
+  ) {
+    return new User(username, email, pwHashed, false, roleID);
   }
 
   forUpdate(): UserUpdateData {
     return {
       ...super.forUpdate(),
-      email: this.email,
+      username: this.username,
       pwHashed: this.pwHashed,
       isVerified: this.isVerified,
     };
@@ -50,6 +57,7 @@ export class User extends BaseEntity implements IUser {
       email: this.email,
       pwHashed: this.pwHashed,
       isVerified: this.isVerified,
+      roleID: this.roleID,
     };
   }
 }
