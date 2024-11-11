@@ -7,7 +7,7 @@ interface Payload {
   href: string;
 }
 
-abstract class MailService {
+export abstract class MailService {
   abstract sendVerifyEmail(payload: Payload);
   abstract sendResetPasswordEmail(payload: Payload);
 }
@@ -63,6 +63,6 @@ export class EmailJSMailService implements MailService {
 }
 
 export const EmailServiceProvider: Provider<MailService> = {
-  provide: EmailJSMailService,
+  provide: MailService,
   useClass: EmailJSMailService,
 };

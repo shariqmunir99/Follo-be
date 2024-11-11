@@ -1,4 +1,11 @@
-import { IsEmail, IsString, Matches, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsString,
+  IsUrl,
+  Matches,
+  MinLength,
+} from 'class-validator';
 
 export class SignUpDto {
   @IsString()
@@ -13,6 +20,12 @@ export class SignUpDto {
     message: 'Password must contain atleast one number',
   })
   password: string;
+
+  @IsBoolean()
+  isOrganizer: boolean;
+
+  @IsUrl()
+  baseUrl: string;
 }
 
 export class LoginDto {

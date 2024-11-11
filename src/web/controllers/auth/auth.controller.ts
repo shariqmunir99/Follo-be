@@ -1,7 +1,9 @@
 import { Body, Controller, Get, HttpCode, Post, Put } from '@nestjs/common';
 import { LoginDto, SignUpDto } from 'src/app/dtos/auth.dto';
 import { AuthWorkflows } from 'src/app/workflows/auth-workflows';
+import { Role } from 'src/domain/enum';
 import { Public } from 'src/web/filters/Decorators/public.decorator';
+import { Roles } from 'src/web/filters/Decorators/roles.decorator';
 
 @Controller('auth')
 export class AuthController {
