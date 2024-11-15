@@ -108,13 +108,7 @@ export class AuthWorkflows {
     const user = await this.userRepo.fetchById(reset_request.userId);
     const newPwHash = await this.pwHasher.hashPassword(new_password);
 
-    console.log('Before Reset:');
-    console.log(`User: ${user.pwHashed}  |  Request: ${reset_request.active}`);
-
     this.authDomServ.updatePassword(reset_request, user, newPwHash);
-
-    console.log('After Reset:');
-    console.log(`User: ${user.pwHashed}  |  Request: ${reset_request.active}`);
 
     await this.persistResetPasswordUpdateEntities(user, reset_request);
 

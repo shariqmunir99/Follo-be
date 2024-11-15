@@ -4,10 +4,11 @@ import { AuthModule } from './infra/di';
 import { JwtAuthGuard } from './web/filters/Guards/AuthGuard';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './web/filters/Guards/RoleGuard';
+import { EventController } from './web/controllers/event/event.controller';
 
 @Module({
   imports: [AuthModule],
-  controllers: [AuthController],
+  controllers: [AuthController, EventController],
   providers: [
     {
       provide: APP_GUARD,
