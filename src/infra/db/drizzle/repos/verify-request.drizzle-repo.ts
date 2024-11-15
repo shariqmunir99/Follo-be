@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { InternalServerErrorException, Provider } from '@nestjs/common';
 import { VerifyRequestRepository } from 'src/domain/entities/verify-requests/verify-request.repository';
 import { VerifyRequest } from 'src/domain/entities/verify-requests/verify-request.entity';
-import { VerifyRequestNotFound } from 'src/domain/entities/verify-requests/verify-request.errors';
+import { InvalidVerifyRequest } from 'src/domain/entities/verify-requests/verify-request.errors';
 import { verifyReqTbl } from '../models/verify-request.model';
 
 export class VerifyReqDrizzleRepo extends VerifyRequestRepository {
@@ -31,16 +31,16 @@ export class VerifyReqDrizzleRepo extends VerifyRequestRepository {
       throw new InternalServerErrorException();
     }
   }
-  async fetchById(id: VerifyRequest['id']) {
+  async fetchById(id: VerifyRequest['id']): Promise<VerifyRequest> {
     try {
       const entity = await this.db
         .select()
         .from(verifyReqTbl)
         .where(eq(verifyReqTbl.id, id));
 
-      if (!entity) throw new VerifyRequestNotFound(id);
+      if (!entity) throw new InvalidVerifyRequest(id);
 
-      return entity[0];
+      return VerifyRequest.fromSerialized(entity[0]);
     } catch {
       throw new InternalServerErrorException();
     }

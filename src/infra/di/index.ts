@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthWorkflows } from 'src/app/workflows/auth-workflows';
 import { DbModule } from '../db/db.module';
 import { HashingServiceProvider } from '../../app/services/auth-services/pwHasher.service';
@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from 'src/app/services/auth-services/jwt-strategy.service';
 import { JwtAuthGuard } from 'src/web/filters/Guards/AuthGuard';
 import { EmailServiceProvider } from 'src/app/services/auth-services/email.service';
+import { AuthDomainService } from 'src/domain/services/auth.domain-service';
 
 const BASE_PROVIDERS = [HashingServiceProvider, EmailServiceProvider];
 
@@ -19,11 +20,22 @@ export class BaseDiModule {}
 const WORKFLOWS = [AuthWorkflows];
 const JWT = [JwtStrategy, JwtAuthGuard];
 
+const DOMAIN_SERVICES = [AuthDomainService];
+@Global()
+@Module({
+  imports: [DbModule, BaseDiModule],
+  providers: DOMAIN_SERVICES,
+  exports: DOMAIN_SERVICES,
+})
+class DomainServicesModule {}
+
+@Global()
 @Module({
   imports: [
     PassportModule,
     DbModule,
     BaseDiModule,
+    DomainServicesModule,
     JwtModule.register({
       secret: process.env.TOKEN_SECRET, // This is your secret key to sign the token (keep it safe!)
       signOptions: { expiresIn: process.env.TOKEN_EXPIRATION_SECONDS }, // Tokens will expire after 60 seconds

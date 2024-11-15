@@ -24,7 +24,7 @@ export class ResetRequest extends BaseEntity implements IResetRequest {
   }
 
   static new(userId: string) {
-    return new ResetRequest(userId, genExp(), false);
+    return new ResetRequest(userId, genExp(), true);
   }
 
   forUpdate(): ResetRequestUpdateData {
@@ -34,6 +34,26 @@ export class ResetRequest extends BaseEntity implements IResetRequest {
     };
   }
 
+  guardAgainstExpiry() {
+    if (this.expiryDate < new Date(Date.now())) {
+      return true;
+    }
+    return false; //Indicates that the request is not expired
+  }
+  markInactive() {
+    if (this.active) {
+      this.active = false;
+      this.markUpdated();
+      return true;
+    }
+    return false; // False indicates that this request has already been verified.
+  }
+
+  static fromSerialized(other: SerializedResetRequest) {
+    const ent = new ResetRequest(other.userId, other.expiryDate, other.active);
+    ent._fromSerialized(other);
+    return ent;
+  }
   serialize(): SerializedResetRequest {
     return {
       ...super._serialize(),

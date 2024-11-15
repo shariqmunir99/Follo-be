@@ -50,6 +50,34 @@ export class User extends BaseEntity implements IUser {
     };
   }
 
+  markActive() {
+    if (!this.isVerified) {
+      this.isVerified = true;
+      return false;
+    }
+    return true; // Indicates that the user is already verified.
+  }
+  setIsVerified() {
+    this.isVerified = true;
+    this.markUpdated();
+  }
+
+  passwordUpdate(newPwHash: string) {
+    this.pwHashed = newPwHash;
+    this.markUpdated;
+  }
+  static fromSerialized(other: SerializedUser) {
+    const ent = new User(
+      other.username,
+      other.email,
+      other.pwHashed,
+      other.isVerified,
+      other.roleID,
+    );
+    ent._fromSerialized(other);
+
+    return ent;
+  }
   serialize(): SerializedUser {
     return {
       ...super._serialize(),
