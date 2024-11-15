@@ -4,7 +4,7 @@ import { DrizzleDB, InjectDb } from '../db-connection';
 import { resetReqTbl } from '../models/reset-request.model';
 import { eq } from 'drizzle-orm';
 import { InternalServerErrorException, Provider } from '@nestjs/common';
-import { ResetRequestNotFound } from 'src/domain/entities/reset-requests/reset-request.errors';
+import { InvalidResetRequest } from 'src/domain/entities/reset-requests/reset-request.errors';
 
 export class ResetReqDrizzleRepo extends ResetRequestRepository {
   constructor(@InjectDb() private readonly db: DrizzleDB) {
@@ -33,16 +33,16 @@ export class ResetReqDrizzleRepo extends ResetRequestRepository {
       throw new InternalServerErrorException();
     }
   }
-  async fetchById(id: ResetRequest['id']) {
+  async fetchById(id: ResetRequest['id']): Promise<ResetRequest> {
     try {
       const entity = await this.db
         .select()
         .from(resetReqTbl)
         .where(eq(resetReqTbl.id, id));
 
-      if (!entity) throw new ResetRequestNotFound(id);
+      if (!entity) throw new InvalidResetRequest(id);
 
-      return entity[0];
+      return ResetRequest.fromSerialized(entity[0]);
     } catch {
       throw new InternalServerErrorException();
     }

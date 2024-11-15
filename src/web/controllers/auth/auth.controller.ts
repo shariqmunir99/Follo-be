@@ -1,5 +1,11 @@
 import { Body, Controller, Get, HttpCode, Post, Put } from '@nestjs/common';
-import { LoginDto, SignUpDto } from 'src/app/dtos/auth.dto';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  ResetPasswordDto,
+  SignUpDto,
+  VerifyDto,
+} from 'src/app/dtos/auth.dto';
 import { AuthWorkflows } from 'src/app/workflows/auth-workflows';
 import { Role } from 'src/domain/enum';
 import { Public } from 'src/web/filters/Decorators/public.decorator';
@@ -31,22 +37,22 @@ export class AuthController {
 
   @Public()
   @Put('/reset-password')
-  async resetPassword(@Body() body: unknown) {
+  async resetPassword(@Body() body: ResetPasswordDto) {
     //Get DTO
-    return 'Reset Password';
+    return this.wfs.resetPassword(body);
   }
 
   @Public()
-  @Put('/forgot-password')
-  async forgotPassword(@Body() body: unknown) {
+  @Post('/forgot-password')
+  async forgotPassword(@Body() body: ForgotPasswordDto) {
     //Get DTO
-    return 'Forgot Password';
+    return this.wfs.forgotPassword(body);
   }
 
   @Public()
   @Put('/verify')
-  async verifyUser(@Body() body: unknown) {
+  async verifyUser(@Body() verifyDTO: VerifyDto) {
     //Get DTO
-    return 'Verify';
+    return this.wfs.verifyUser(verifyDTO);
   }
 }

@@ -24,7 +24,23 @@ export class VerifyRequest extends BaseEntity implements IVerifyRequest {
   }
 
   static new(userId: string) {
-    return new VerifyRequest(userId, genExp(), false);
+    return new VerifyRequest(userId, genExp(), true);
+  }
+
+  guardAgainstExpiry() {
+    if (this.expiryDate < new Date(Date.now())) {
+      return true;
+    }
+    return false; //Indicates that the request is not expired
+  }
+
+  markInactive() {
+    if (this.active) {
+      this.active = false;
+      this.markUpdated();
+      return true;
+    }
+    return false; // False indicates that this request has already been marked inactive.
   }
 
   forUpdate(): VerifyRequestUpdateData {
@@ -32,6 +48,11 @@ export class VerifyRequest extends BaseEntity implements IVerifyRequest {
       ...super.forUpdate(),
       active: this.active,
     };
+  }
+  static fromSerialized(other: SerializedVerifyRequest) {
+    const ent = new VerifyRequest(other.userId, other.expiryDate, other.active);
+    ent._fromSerialized(other);
+    return ent;
   }
 
   serialize(): SerializedVerifyRequest {

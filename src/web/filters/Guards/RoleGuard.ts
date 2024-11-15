@@ -24,12 +24,9 @@ export class RolesGuard implements CanActivate {
       role = 'Organizer';
     } else role = 'User';
 
-    console.log(requiredRoles);
     const { user } = context.switchToHttp().getRequest();
-    console.log(user);
     const userRole = await this.rolesRepo.fetchById(user.roleID);
     if (userRole.roleName === role) {
-      console.log('Shariq Munir');
       return true;
     } else return false;
   }

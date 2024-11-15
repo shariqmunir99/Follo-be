@@ -35,3 +35,33 @@ export class LoginDto {
   @IsString()
   password: string;
 }
+
+export class VerifyDto {
+  @IsString()
+  verify_token: string;
+
+  // @IsString()
+  // password: string;
+}
+
+export class ForgotPasswordDto {
+  @IsString()
+  email: string;
+
+  @IsUrl()
+  baseUrl: string;
+  // @IsString()
+  // password: string;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  reset_token: string;
+
+  @IsString()
+  @MinLength(6)
+  @Matches(/^(?=.*[0-9])/, {
+    message: 'Password must contain atleast one number',
+  })
+  new_password: string;
+}

@@ -49,7 +49,7 @@ class UserDrizzleRepo extends UserRepository {
     }
   }
 
-  async fetchById(id: string): Promise<DatabaseUser> {
+  async fetchById(id: string): Promise<User> {
     try {
       const user = await this.db
         .select()
@@ -58,13 +58,13 @@ class UserDrizzleRepo extends UserRepository {
       if (!user) {
         throw new UserNotFound(id);
       }
-      return user[0]; // Return the User as is in case of successful insertion.
+      return User.fromSerialized(user[0]); // Return the User as is in case of successful insertion.
     } catch (e) {
       throw new InternalServerErrorException();
     }
   }
 
-  async fetchByEmail(email: string): Promise<DatabaseUser> {
+  async fetchByEmail(email: string): Promise<User> {
     try {
       const user = await this.db
         .select()
@@ -73,7 +73,7 @@ class UserDrizzleRepo extends UserRepository {
       if (!user) {
         throw new UserNotFound(email);
       }
-      return user[0]; // Return the User as is in case of successful Fetch.
+      return User.fromSerialized(user[0]); // Return the User as is in case of successful Fetch.
     } catch (e) {
       throw new InternalServerErrorException();
     }

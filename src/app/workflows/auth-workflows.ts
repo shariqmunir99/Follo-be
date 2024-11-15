@@ -5,7 +5,13 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
 import { User } from 'src/domain/entities/user/user.entity';
 import ArgonPwHasher from 'src/app/services/auth-services/pwHasher.service';
-import { LoginDto, SignUpDto } from '../dtos/auth.dto';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  ResetPasswordDto,
+  SignUpDto,
+  VerifyDto,
+} from '../dtos/auth.dto';
 import { ResetRequestRepository } from 'src/domain/entities/reset-requests/reset-request.repository';
 import { VerifyRequestRepository } from 'src/domain/entities/verify-requests/verify-request.repository';
 import { ResetRequest } from 'src/domain/entities/reset-requests/reset-request.entity';
@@ -13,6 +19,7 @@ import { VerifyRequest } from 'src/domain/entities/verify-requests/verify-reques
 import { MailService } from '../services/auth-services/email.service';
 import { RoleRepository } from 'src/domain/entities/role/role.repository';
 import { Role } from 'src/domain/entities/role/role.entity';
+import { AuthDomainService } from 'src/domain/services/auth.domain-service';
 
 @Injectable()
 export class AuthWorkflows {
@@ -24,6 +31,7 @@ export class AuthWorkflows {
     private readonly verifyReqRepo: VerifyRequestRepository,
     private readonly emailService: MailService,
     private readonly roleRepo: RoleRepository,
+    private readonly authDomServ: AuthDomainService,
   ) {}
 
   async demoSignIn() {
@@ -95,6 +103,65 @@ export class AuthWorkflows {
       message: 'success',
     };
   }
-  async resetPassword() {}
-  async forgotPassword() {}
+  async resetPassword({ reset_token, new_password }: ResetPasswordDto) {
+    const reset_request = await this.resetReqRepo.fetchById(reset_token);
+    const user = await this.userRepo.fetchById(reset_request.userId);
+    const newPwHash = await this.pwHasher.hashPassword(new_password);
+
+    console.log('Before Reset:');
+    console.log(`User: ${user.pwHashed}  |  Request: ${reset_request.active}`);
+
+    this.authDomServ.updatePassword(reset_request, user, newPwHash);
+
+    console.log('After Reset:');
+    console.log(`User: ${user.pwHashed}  |  Request: ${reset_request.active}`);
+
+    await this.persistResetPasswordUpdateEntities(user, reset_request);
+
+    return {
+      message: 'Your password was succesfully changed.',
+    };
+  }
+  async forgotPassword({ email, baseUrl }: ForgotPasswordDto) {
+    const user = await this.userRepo.fetchByEmail(email);
+    const reset_request = ResetRequest.new(user.id);
+    await this.resetReqRepo.insert(reset_request);
+
+    await this.emailService.sendResetPasswordEmail({
+      user_name: user.username,
+      user_email: email,
+      href: baseUrl + '/' + reset_request.id,
+    });
+
+    return {
+      message: 'The reset link has been sent to the provided email.',
+    };
+  }
+
+  async persistVerifyUpdateEntities(user: User, verify_request: VerifyRequest) {
+    await this.userRepo.update(user);
+    await this.verifyReqRepo.update(verify_request);
+  }
+
+  async persistResetPasswordUpdateEntities(
+    user: User,
+    reset_request: ResetRequest,
+  ) {
+    await this.userRepo.update(user);
+    await this.resetReqRepo.update(reset_request);
+  }
+
+  async verifyUser({ verify_token }: VerifyDto) {
+    const verify_request: VerifyRequest =
+      await this.verifyReqRepo.fetchById(verify_token);
+    const user: User = await this.userRepo.fetchById(verify_request.userId);
+
+    this.authDomServ.verifyUser(verify_request, user);
+
+    await this.persistVerifyUpdateEntities(user, verify_request);
+
+    return {
+      meessage: 'Your account has been successfully activated.',
+    };
+  }
 }
