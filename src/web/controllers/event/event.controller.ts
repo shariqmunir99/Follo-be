@@ -40,7 +40,14 @@ export class EventController {
   }
 
   @Get('/interested-by')
-  FetchInterestedBy(@Body() body: unknown) {
+  fetchInterestedBy(@Body() body: unknown) {
+    return this.wfs.demoDeleteInterestedBy(
+      '0b823b2f-7570-4519-ab06-04a01030648c',
+    );
+  }
+
+  @Delete('/interested-by')
+  deleteInterestedBy(@Body() body: unknown) {
     return this.wfs.demoDeleteInterestedBy(
       '0b823b2f-7570-4519-ab06-04a01030648c',
     );
@@ -48,11 +55,16 @@ export class EventController {
 
   @Post('/favorited-by')
   addToFavoritedBy(@Body() body: unknown) {
-    return 'Add to favoritedBY';
+    return this.wfs.demoCreateFavoritedBy(
+      'b80fa63f-4d82-49f6-a09f-df24bf517ccc',
+      '0a049db2-de21-4666-8ce1-b0808d4037ae',
+    );
   }
 
   @Get('/favorited-by')
-  FetchFavoritedBy(@Body() body: unknown) {
-    return 'Fetch InterestedBy for an event.';
+  fetchFavoritedBy(@Body() body: unknown) {
+    return this.wfs.demoFetchFavoritedByUser(
+      'b80fa63f-4d82-49f6-a09f-df24bf517ccc',
+    );
   }
 }

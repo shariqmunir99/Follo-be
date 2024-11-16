@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Event } from 'src/domain/entities/event/event.entity';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
+import { FavoritedBy } from 'src/domain/entities/favorited-by/favorited-by.entity';
+import { FavoritedByRepository } from 'src/domain/entities/favorited-by/favorited-by.repository';
 import { InterestedBy } from 'src/domain/entities/interested-by/interested-by.entity';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
 import { User } from 'src/domain/entities/user/user.entity';
@@ -12,6 +14,7 @@ export class EventWorkflows {
     private readonly eventRepo: EventRepository,
     private readonly interestedByRepo: InterestedByRepository,
     private readonly userRepo: UserRepository,
+    private readonly favoritedByRepo: FavoritedByRepository,
   ) {}
 
   async demoCreate() {
@@ -67,6 +70,40 @@ export class EventWorkflows {
 
   async demoFetchInterestedByEvent(eventId: string) {
     const result = await this.interestedByRepo.fetchByEventId(eventId);
+    return {
+      result,
+    };
+  }
+
+  async demoCreateFavoritedBy(userId: string, eventid: string) {
+    const favoritedBy = FavoritedBy.new(userId, eventid);
+    const result = await this.favoritedByRepo.insert(favoritedBy);
+    return {
+      result,
+    };
+  }
+
+  async demoDeleteFavoritedBy(id: string) {
+    await this.favoritedByRepo.delete(id);
+    return {
+      result: 'Deletion succesful',
+    };
+  }
+
+  async demoFetchFavoritedByUser(userId: string) {
+    const favoritedByList = await this.favoritedByRepo.fetchByUserId(userId);
+    const result: User[] = await Promise.all(
+      favoritedByList.map((favoritedByEntity) =>
+        this.userRepo.fetchById(favoritedByEntity.userId),
+      ),
+    );
+    return {
+      result,
+    };
+  }
+
+  async demoFetchFavoritedByEvent(eventId: string) {
+    const result = await this.favoritedByRepo.fetchByEventId(eventId);
     return {
       result,
     };

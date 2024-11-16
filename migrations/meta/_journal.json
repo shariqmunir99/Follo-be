@@ -50,6 +50,13 @@
       "when": 1731765204043,
       "tag": "0006_add-interested-by-tbl",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1731785887033,
+      "tag": "0007_add-favorited-by-tbl",
+      "breakpoints": true
     }
   ]
 }
