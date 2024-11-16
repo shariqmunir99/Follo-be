@@ -6,7 +6,7 @@ import {
   SignUpDto,
   VerifyDto,
 } from 'src/app/dtos/auth.dto';
-import { AuthWorkflows } from 'src/app/workflows/auth-workflows';
+import { AuthWorkflows } from 'src/app/workflows/auth.workflows';
 import { Public } from 'src/web/filters/Decorators/public.decorator';
 
 @Public()
