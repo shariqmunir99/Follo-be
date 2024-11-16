@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { AuthWorkflows } from 'src/app/workflows/auth-workflows';
+import { AuthWorkflows } from 'src/app/workflows/auth.workflows';
 import { DbModule } from '../db/db.module';
 import { HashingServiceProvider } from '../../app/services/auth-services/pwHasher.service';
 import { JwtModule } from '@nestjs/jwt';
@@ -8,6 +8,7 @@ import { JwtStrategy } from 'src/app/services/auth-services/jwt-strategy.service
 import { JwtAuthGuard } from 'src/web/filters/Guards/AuthGuard';
 import { EmailServiceProvider } from 'src/app/services/auth-services/email.service';
 import { AuthDomainService } from 'src/domain/services/auth.domain-service';
+import { EventWorkflows } from 'src/app/workflows/event.workflow';
 
 const BASE_PROVIDERS = [HashingServiceProvider, EmailServiceProvider];
 
@@ -17,7 +18,7 @@ const BASE_PROVIDERS = [HashingServiceProvider, EmailServiceProvider];
 })
 export class BaseDiModule {}
 
-const WORKFLOWS = [AuthWorkflows];
+const WORKFLOWS = [AuthWorkflows, EventWorkflows];
 const JWT = [JwtStrategy, JwtAuthGuard];
 
 const DOMAIN_SERVICES = [AuthDomainService];

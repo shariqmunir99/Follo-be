@@ -4,6 +4,10 @@ import { UserRepoProvider } from './drizzle/repos/user.drizzle-repo';
 import { ResetReqRepoProvider } from './drizzle/repos/reset-request.drizzle-repo';
 import { VerifyReqRepoProvider } from './drizzle/repos/verify-request.drizzle-repo';
 import { RoleRepoProvider } from './drizzle/repos/role.drizzle-repo';
+import { EventRepoProvider } from './drizzle/repos/event.drizzle-repo';
+import { InterestedByRepoProvider } from './drizzle/repos/interested-by.drizzle-repo';
+import { FavoritedByRepoProvider } from './drizzle/repos/favorited-by.drizzle-repo';
+import { FollowRepoProvider } from './drizzle/repos/follow.drizzle-repo';
 
 const REPOS = [
   drizzleDbProvider,
@@ -11,6 +15,10 @@ const REPOS = [
   ResetReqRepoProvider,
   VerifyReqRepoProvider,
   RoleRepoProvider,
+  EventRepoProvider,
+  InterestedByRepoProvider,
+  FavoritedByRepoProvider,
+  FollowRepoProvider,
 ];
 
 @Global()

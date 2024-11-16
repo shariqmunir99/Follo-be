@@ -11,10 +11,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Check if the route is marked as public
-    const isPublic = this.reflector.get<boolean>(
-      IS_PUBLIC_KEY,
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
-    );
+      context.getClass(),
+    ]);
     if (isPublic) {
       return true; // Skip the JWT verification
     }

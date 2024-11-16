@@ -18,7 +18,7 @@ type UserUpdateData = Omitt<IUser, 'id' | 'createdAt' | 'email' | 'roleID'>;
 export class User extends BaseEntity implements IUser {
   pwHashed: string;
   isVerified: boolean;
-  username;
+  username: string;
   private constructor(
     username: string,
     readonly email: string,
