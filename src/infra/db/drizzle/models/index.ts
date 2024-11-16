@@ -1,4 +1,5 @@
 import { eventTbl } from './event.model';
+import { interestedByTbl } from './interested-by.model';
 import { resetReqTbl } from './reset-request.model';
 import { roleTbl } from './role.model';
 import { userTbl } from './user.model';
@@ -10,6 +11,7 @@ const dbSchema = {
   verifyRequests: verifyReqTbl,
   roles: roleTbl,
   events: eventTbl,
+  interestedBy: interestedByTbl,
 };
 
 export default dbSchema;

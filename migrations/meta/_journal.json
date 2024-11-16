@@ -43,6 +43,13 @@
       "when": 1731703467548,
       "tag": "0005_fix-event-date-prop",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1731765204043,
+      "tag": "0006_add-interested-by-tbl",
+      "breakpoints": true
     }
   ]
 }

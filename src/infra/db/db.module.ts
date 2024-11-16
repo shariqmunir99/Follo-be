@@ -5,6 +5,7 @@ import { ResetReqRepoProvider } from './drizzle/repos/reset-request.drizzle-repo
 import { VerifyReqRepoProvider } from './drizzle/repos/verify-request.drizzle-repo';
 import { RoleRepoProvider } from './drizzle/repos/role.drizzle-repo';
 import { EventRepoProvider } from './drizzle/repos/event.drizzle-repo';
+import { InterestedByRepoProvider } from './drizzle/repos/interested-by.drizzle-repo';
 
 const REPOS = [
   drizzleDbProvider,
@@ -13,6 +14,7 @@ const REPOS = [
   VerifyReqRepoProvider,
   RoleRepoProvider,
   EventRepoProvider,
+  InterestedByRepoProvider,
 ];
 
 @Global()
