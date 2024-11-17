@@ -61,7 +61,10 @@ export class User extends BaseEntity implements IUser {
     this.isVerified = true;
     this.markUpdated();
   }
-
+  usernameUpdate(newUsername: string) {
+    this.username = newUsername;
+    this.markUpdated();
+  }
   passwordUpdate(newPwHash: string) {
     this.pwHashed = newPwHash;
     this.markUpdated;

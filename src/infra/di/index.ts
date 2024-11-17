@@ -9,6 +9,8 @@ import { JwtAuthGuard } from 'src/web/filters/Guards/AuthGuard';
 import { EmailServiceProvider } from 'src/app/services/auth-services/email.service';
 import { AuthDomainService } from 'src/domain/services/auth.domain-service';
 import { EventWorkflows } from 'src/app/workflows/event.workflow';
+import { UserDomainService } from 'src/domain/services/user.domain-service';
+import { UserWorkflows } from 'src/app/workflows/user.workflow';
 
 const BASE_PROVIDERS = [HashingServiceProvider, EmailServiceProvider];
 
@@ -18,10 +20,10 @@ const BASE_PROVIDERS = [HashingServiceProvider, EmailServiceProvider];
 })
 export class BaseDiModule {}
 
-const WORKFLOWS = [AuthWorkflows, EventWorkflows];
+const WORKFLOWS = [AuthWorkflows, EventWorkflows, UserWorkflows];
 const JWT = [JwtStrategy, JwtAuthGuard];
 
-const DOMAIN_SERVICES = [AuthDomainService];
+const DOMAIN_SERVICES = [AuthDomainService, UserDomainService];
 @Global()
 @Module({
   imports: [DbModule, BaseDiModule],
@@ -39,10 +41,10 @@ class DomainServicesModule {}
     DomainServicesModule,
     JwtModule.register({
       secret: process.env.TOKEN_SECRET, // This is your secret key to sign the token (keep it safe!)
-      signOptions: { expiresIn: process.env.TOKEN_EXPIRATION_SECONDS }, // Tokens will expire after 60 seconds
+      signOptions: { expiresIn: process.env.TOKEN_EXPIRATION_SECONDS },
     }),
   ],
   providers: [...WORKFLOWS, ...JWT],
   exports: [...WORKFLOWS, ...JWT],
 })
-export class AuthModule {}
+export class AppModule {}
