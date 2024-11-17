@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './web/controllers/auth/auth.controller';
-import { AuthModule } from './infra/di';
+import { AppModule } from './infra/di';
 import { JwtAuthGuard } from './web/filters/Guards/AuthGuard';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './web/filters/Guards/RoleGuard';
 import { EventController } from './web/controllers/event/event.controller';
+import { UserController } from './web/controllers/user/user.controllers';
 
 @Module({
-  imports: [AuthModule],
-  controllers: [AuthController, EventController],
+  imports: [AppModule],
+  controllers: [AuthController, EventController, UserController],
   providers: [
     {
       provide: APP_GUARD,
@@ -20,4 +21,4 @@ import { EventController } from './web/controllers/event/event.controller';
     },
   ],
 })
-export class AppModule {}
+export class WebModule {}
