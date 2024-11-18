@@ -10,7 +10,7 @@ import { AuthWorkflows } from 'src/app/workflows/auth.workflows';
 import { Public } from 'src/web/filters/Decorators/public.decorator';
 
 @Public()
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly wfs: AuthWorkflows) {}
 
