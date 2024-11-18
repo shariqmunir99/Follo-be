@@ -1,70 +1,87 @@
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
+import {
+  CreateEventDto,
+  DeleteEventDto,
+  EditEventDto,
+  GetEventDto,
+  InteractionDto,
+} from 'src/app/dtos/event.dto';
 import { EventWorkflows } from 'src/app/workflows/event.workflow';
-import { Public } from 'src/web/filters/Decorators/public.decorator';
+import { Role } from 'src/domain/enum';
+import { Roles } from 'src/web/filters/Decorators/roles.decorator';
 
-@Public()
-@Controller('event')
+@Controller('api/event')
 export class EventController {
   constructor(private readonly wfs: EventWorkflows) {}
 
-  @Get('')
-  demo() {
-    return this.wfs.demoCreate();
-  }
+  @Roles(Role.Organizer)
   @Post('/upload')
-  create(@Body() body: unknown) {
-    return 'Create Event';
+  async create(@Body() body: CreateEventDto, @Req() req) {
+    return await this.wfs.createEvent(body, req.user);
   }
 
+  @Roles(Role.Organizer)
   @Put('/edit')
-  edit(@Body() body: unknown) {
-    return 'Edit Event details';
+  async edit(@Body() body: EditEventDto) {
+    return await this.wfs.editEvent(body);
+  }
+
+  @Roles(Role.Organizer)
+  @Delete('/delete')
+  async delete(@Body() body: DeleteEventDto) {
+    return await this.wfs.deleteEvent(body);
   }
 
   @Get('/details')
-  getDetails(@Body() body: unknown) {
-    return 'Get Event Details';
+  async getDetails(@Body() body: GetEventDto) {
+    return await this.wfs.getEvent(body);
   }
 
-  @Delete()
-  delete(@Body() body: unknown) {
-    return this.wfs.demoDelete('effbc9e2-9287-4f57-8667-b6b100b82469');
-  }
-
+  //Add user to an event's interestedBy List.
+  //Only a user can access this route.
+  @Roles(Role.User)
   @Post('/interested-by')
-  addToInterestedBy(@Body() body: unknown) {
-    return this.wfs.demoCreateInterestedBy(
-      'b80fa63f-4d82-49f6-a09f-df24bf517ccc',
-      '0a049db2-de21-4666-8ce1-b0808d4037ae',
-    );
+  async addToInterestedBy(@Body() body: InteractionDto, @Req() req) {
+    return await this.wfs.addToInterestedByListOfEvent(body, req.user);
   }
 
+  //Fetch an event's interstedBy List.
+  //Only an organizer can access this route.
+  @Roles(Role.Organizer)
   @Get('/interested-by')
-  fetchInterestedBy(@Body() body: unknown) {
-    return this.wfs.demoDeleteInterestedBy(
-      '0b823b2f-7570-4519-ab06-04a01030648c',
-    );
+  async fetchInterestedBy(@Body() body: InteractionDto) {
+    return await this.wfs.fetchInterestedByListOfEvent(body);
   }
 
+  //To remove a user from an event's interstedBy List.
+  //Only a user can access this route.
+  @Roles(Role.User)
   @Delete('/interested-by')
-  deleteInterestedBy(@Body() body: unknown) {
-    return this.wfs.demoDeleteInterestedBy(
-      '0b823b2f-7570-4519-ab06-04a01030648c',
-    );
+  async deleteInterestedBy(@Body() body: InteractionDto, @Req() req) {
+    return await this.wfs.deletefromInterestedByListOfEvent(body, req.user);
   }
 
+  //Add user to an event's favoritedBy List.
+  //Only a user can access this route.
+  @Roles(Role.User)
   @Post('/favorited-by')
-  addToFavoritedBy(@Body() body: unknown) {
-    return this.wfs.demoCreateFavoritedBy(
-      'b80fa63f-4d82-49f6-a09f-df24bf517ccc',
-      '0a049db2-de21-4666-8ce1-b0808d4037ae',
-    );
+  async addToFavoritedBy(@Body() body: InteractionDto, @Req() req) {
+    return await this.wfs.addToFavoritedByListOfEvent(body, req.user);
   }
 
+  //Fetch an event's favoritedBy List.
+  //Only an organizer can access this route.
+  @Roles(Role.Organizer)
   @Get('/favorited-by')
-  fetchFavoritedBy(@Body() body: unknown) {
-    return this.wfs.demoFetchFavoritedByUser(
-      'b80fa63f-4d82-49f6-a09f-df24bf517ccc',
-    );
+  async fetchFavoritedBy(@Body() body: InteractionDto) {
+    return await this.wfs.fetchFavoritedByListOfEvent(body);
+  }
+
+  //To remove a user from an event's favoritedBy List.
+  //Only a user can access this route.
+  @Roles(Role.User)
+  @Delete('/favorited-by')
+  async deleteFavoritedBy(@Body() body: InteractionDto, @Req() req) {
+    return await this.wfs.deletefromFavoritedByListOfEvent(body, req.user);
   }
 }

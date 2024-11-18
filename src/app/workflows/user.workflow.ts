@@ -3,7 +3,7 @@ import { FavoritedByRepository } from 'src/domain/entities/favorited-by/favorite
 import { FollowRepository } from 'src/domain/entities/follow/follow.repository';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
-import { EditProfileDto } from '../dtos/user.dto';
+import { EditProfileDto, FollowDto } from '../dtos/user.dto';
 import { UserDomainService } from 'src/domain/services/user.domain-service';
 import { User } from 'src/domain/entities/user/user.entity';
 
@@ -34,4 +34,14 @@ export class UserWorkflows {
       message: 'Resource Updated Successfully',
     };
   }
+
+  async getProfile(user: User) {}
+
+  async addFollow({ organizer_id }: FollowDto, user: User) {}
+
+  async removeFollow({ organizer_id }: FollowDto, user: User) {}
+
+  async fetchInterestedEvents(user: User) {}
+
+  async fetchFavoritedEvents(user: User) {}
 }

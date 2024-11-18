@@ -11,6 +11,7 @@ import { AuthDomainService } from 'src/domain/services/auth.domain-service';
 import { EventWorkflows } from 'src/app/workflows/event.workflow';
 import { UserDomainService } from 'src/domain/services/user.domain-service';
 import { UserWorkflows } from 'src/app/workflows/user.workflow';
+import { EventDomainService } from 'src/domain/services/event.domain-service';
 
 const BASE_PROVIDERS = [HashingServiceProvider, EmailServiceProvider];
 
@@ -23,7 +24,11 @@ export class BaseDiModule {}
 const WORKFLOWS = [AuthWorkflows, EventWorkflows, UserWorkflows];
 const JWT = [JwtStrategy, JwtAuthGuard];
 
-const DOMAIN_SERVICES = [AuthDomainService, UserDomainService];
+const DOMAIN_SERVICES = [
+  AuthDomainService,
+  UserDomainService,
+  EventDomainService,
+];
 @Global()
 @Module({
   imports: [DbModule, BaseDiModule],
