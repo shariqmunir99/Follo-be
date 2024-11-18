@@ -7,6 +7,14 @@ import { InterestedBy } from 'src/domain/entities/interested-by/interested-by.en
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
 import { User } from 'src/domain/entities/user/user.entity';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
+import {
+  CreateEventDto,
+  DeleteEventDto,
+  EditEventDto,
+  GetEventDto,
+  InteractionDto,
+} from '../dtos/event.dto';
+import { EventDomainService } from 'src/domain/services/event.domain-service';
 
 @Injectable()
 export class EventWorkflows {
@@ -15,97 +23,46 @@ export class EventWorkflows {
     private readonly interestedByRepo: InterestedByRepository,
     private readonly userRepo: UserRepository,
     private readonly favoritedByRepo: FavoritedByRepository,
+    private readonly eventDomServ: EventDomainService,
   ) {}
 
-  async demoCreate() {
-    const event = Event.new(
-      'Lost Soul',
-      'Concert',
-      'Come and find your lost souls',
-      new Date(Date.now()),
-      'Lahore',
-      'Pakistan',
-      'PC Hotel',
-      'b80fa63f-4d82-49f6-a09f-df24bf517ccc',
-    );
-    const result = await this.eventRepo.insert(event);
-    return {
-      result,
-    };
-  }
+  async createEvent(
+    { name, type, description, date, city, country, venue }: CreateEventDto,
+    user: User,
+  ) {}
 
-  async demoDelete(id: string) {
-    await this.eventRepo.delete(id);
-    return {
-      message: 'Delete Successful',
-    };
-  }
+  async editEvent({
+    name,
+    type,
+    description,
+    date,
+    city,
+    country,
+    venue,
+  }: EditEventDto) {}
 
-  async demoCreateInterestedBy(userId: string, eventid: string) {
-    const interestedBy = InterestedBy.new(userId, eventid);
-    const result = await this.interestedByRepo.insert(interestedBy);
-    return {
-      result,
-    };
-  }
+  async getEvent({ event_id }: GetEventDto) {}
 
-  async demoDeleteInterestedBy(id: string) {
-    await this.interestedByRepo.delete(id);
-    return {
-      result: 'Deletion succesful',
-    };
-  }
+  async deleteEvent({ event_id }: DeleteEventDto) {}
 
-  async demoFetchInterestedByUser(userId: string) {
-    const interestedByList = await this.interestedByRepo.fetchByUserId(userId);
-    const result: User[] = await Promise.all(
-      interestedByList.map((interestedByEntity) =>
-        this.userRepo.fetchById(interestedByEntity.userId),
-      ),
-    );
-    return {
-      result,
-    };
-  }
+  async addToInterestedByListOfEvent(
+    { event_id }: InteractionDto,
+    user: User,
+  ) {}
 
-  async demoFetchInterestedByEvent(eventId: string) {
-    const result = await this.interestedByRepo.fetchByEventId(eventId);
-    return {
-      result,
-    };
-  }
+  async deletefromInterestedByListOfEvent(
+    { event_id }: InteractionDto,
+    user: User,
+  ) {}
 
-  async demoCreateFavoritedBy(userId: string, eventid: string) {
-    const favoritedBy = FavoritedBy.new(userId, eventid);
-    const result = await this.favoritedByRepo.insert(favoritedBy);
-    return {
-      result,
-    };
-  }
+  async fetchInterestedByListOfEvent({ event_id }: InteractionDto) {}
 
-  async demoDeleteFavoritedBy(id: string) {
-    await this.favoritedByRepo.delete(id);
-    return {
-      result: 'Deletion succesful',
-    };
-  }
+  async addToFavoritedByListOfEvent({ event_id }: InteractionDto, user: User) {}
 
-  async demoFetchFavoritedByUser(userId: string) {
-    const favoritedByList = await this.favoritedByRepo.fetchByUserId(userId);
-    const result: User[] = await Promise.all(
-      favoritedByList.map((favoritedByEntity) =>
-        this.userRepo.fetchById(favoritedByEntity.userId),
-      ),
-    );
-    return {
-      result,
-    };
-  }
+  async deletefromFavoritedByListOfEvent(
+    { event_id }: InteractionDto,
+    user: User,
+  ) {}
 
-  async demoFetchFavoritedByEvent(eventId: string) {
-    const result = await this.favoritedByRepo.fetchByEventId(eventId);
-    return {
-      result,
-    };
-  }
+  async fetchFavoritedByListOfEvent({ event_id }: InteractionDto) {}
 }
