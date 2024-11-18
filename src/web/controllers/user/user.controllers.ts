@@ -11,11 +11,9 @@ import {
 import { EditProfileDto, FollowDto } from 'src/app/dtos/user.dto';
 import { UserWorkflows } from 'src/app/workflows/user.workflow';
 import { Role } from 'src/domain/enum';
-import { Public } from 'src/web/filters/Decorators/public.decorator';
 import { Roles } from 'src/web/filters/Decorators/roles.decorator';
 
 @Injectable()
-@Public()
 @Controller('api/user')
 export class UserController {
   constructor(private readonly wfs: UserWorkflows) {}
