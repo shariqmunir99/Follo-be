@@ -4,7 +4,7 @@ import {
   Provider,
 } from '@nestjs/common';
 import { DrizzleDB, InjectDb } from '../db-connection';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
 import {
   InterestedBy,
@@ -31,12 +31,19 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
     }
   }
 
-  async delete(id: string) {
+  async delete(userId: string, eventId: string) {
     try {
-      await this.db.delete(interestedByTbl).where(eq(interestedByTbl.id, id));
+      await this.db
+        .delete(interestedByTbl)
+        .where(
+          and(
+            eq(interestedByTbl.userId, userId),
+            eq(interestedByTbl.eventId, eventId),
+          ),
+        );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      throw new InterestedByNotFound(id);
+      throw new InterestedByNotFound(userId);
     }
   }
 
