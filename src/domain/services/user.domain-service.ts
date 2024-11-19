@@ -26,4 +26,10 @@ export class UserDomainService {
 
     return user;
   }
+
+  isVerified(user: User) {
+    if (user.isVerified) {
+      return;
+    }
+  }
 }

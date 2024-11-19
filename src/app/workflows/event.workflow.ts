@@ -15,6 +15,7 @@ import {
   InteractionDto,
 } from '../dtos/event.dto';
 import { EventDomainService } from 'src/domain/services/event.domain-service';
+import { UserDomainService } from 'src/domain/services/user.domain-service';
 
 @Injectable()
 export class EventWorkflows {
@@ -24,6 +25,7 @@ export class EventWorkflows {
     private readonly userRepo: UserRepository,
     private readonly favoritedByRepo: FavoritedByRepository,
     private readonly eventDomServ: EventDomainService,
+    private readonly userDomServ: UserDomainService,
   ) {}
 
   async createEvent(
@@ -54,7 +56,9 @@ export class EventWorkflows {
     };
   }
 
-  async deleteEvent({ event_id }: DeleteEventDto) {}
+  async deleteEvent({ event_id }: DeleteEventDto) {
+    // const event = await this.eventRepo.fetchById(event_id);
+  }
 
   async addToInterestedByListOfEvent(
     { event_id }: InteractionDto,
@@ -68,7 +72,16 @@ export class EventWorkflows {
 
   async fetchInterestedByListOfEvent({ event_id }: InteractionDto) {}
 
-  async addToFavoritedByListOfEvent({ event_id }: InteractionDto, user: User) {}
+  async addToFavoritedByListOfEvent({ event_id }: InteractionDto, user: User) {
+    this.userDomServ.isVerified(user);
+    console.log('function ke andar');
+    const favouritedBy = FavoritedBy.new(user.id, event_id);
+    await this.favoritedByRepo.insert(favouritedBy);
+
+    return {
+      message: 'event successfuly favourited.',
+    };
+  }
 
   async deletefromFavoritedByListOfEvent(
     { event_id }: InteractionDto,
