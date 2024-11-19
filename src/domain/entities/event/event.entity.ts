@@ -76,8 +76,8 @@ export class Event extends BaseEntity implements IEvent {
     this.type = newType;
     this.markUpdated();
   }
-  descriptionUpdate(newDiscription: string) {
-    this.description = newDiscription;
+  descriptionUpdate(newDescription: string) {
+    this.description = newDescription;
     this.markUpdated();
   }
   dateUpdate(newDate: string) {
@@ -92,8 +92,8 @@ export class Event extends BaseEntity implements IEvent {
     this.country = newCountry;
     this.markUpdated();
   }
-  venueUpdate(newvenue: string) {
-    this.venue = newvenue;
+  venueUpdate(newVenue: string) {
+    this.venue = newVenue;
     this.markUpdated();
   }
 

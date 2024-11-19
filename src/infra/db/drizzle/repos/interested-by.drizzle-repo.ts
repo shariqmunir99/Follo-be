@@ -81,7 +81,7 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
         events.push(temp);
       }
 
-      return interestedBy; //Returns the list of all the user ID's that have interested the event.
+      return events; //Returns the list of all the user ID's that have interested the event.
     } catch (e) {
       throw new InternalServerErrorException();
     }

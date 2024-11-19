@@ -83,15 +83,20 @@ export class EventWorkflows {
 
   async deleteEvent({ event_id }: DeleteEventDto) {}
 
-  async addToInterestedByListOfEvent(
-    { event_id }: InteractionDto,
-    user: User,
-  ) {}
+  async addToInterestedByListOfEvent({ event_id }: InteractionDto, user: User) {
+    this.userDomServ.isVerified(user);
+    const interstedBy = InterestedBy.new(user.id, event_id);
+    const result = await this.interestedByRepo.insert(interstedBy);
+    return { result };
+  }
 
   async deletefromInterestedByListOfEvent(
     { event_id }: InteractionDto,
     user: User,
-  ) {}
+  ) {
+    this.userDomServ.isVerified(user);
+    const result = await this.interestedByRepo.delete(user.id, event_id);
+  }
 
   // drizzle repo in user repo take out user and seralize and send
   async fetchInterestedByListOfEvent({ event_id }: InteractionDto) {}
