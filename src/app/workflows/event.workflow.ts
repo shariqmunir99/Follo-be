@@ -94,5 +94,9 @@ export class EventWorkflows {
     };
   }
 
-  async fetchFavoritedByListOfEvent({ event_id }: InteractionDto) {}
+  async fetchFavoritedByListOfEvent({ event_id }: InteractionDto) {
+    const users = await this.favoritedByRepo.fetchByEventId(event_id);
+
+    return users;
+  }
 }
