@@ -15,6 +15,8 @@ import {
   InteractionDto,
 } from '../dtos/event.dto';
 import { EventDomainService } from 'src/domain/services/event.domain-service';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { UserDomainService } from 'src/domain/services/user.domain-service';
 
 @Injectable()
 export class EventWorkflows {
@@ -24,14 +26,32 @@ export class EventWorkflows {
     private readonly userRepo: UserRepository,
     private readonly favoritedByRepo: FavoritedByRepository,
     private readonly eventDomServ: EventDomainService,
+    private readonly userDomServ: UserDomainService,
   ) {}
 
   async createEvent(
     { name, type, description, date, city, country, venue }: CreateEventDto,
     user: User,
-  ) {}
+  ) {
+    this.userDomServ.isVerified(user);
+    const newEvent = Event.new(
+      name,
+      type,
+      description,
+      new Date(date),
+      city,
+      country,
+      venue,
+      user.id,
+    );
+    const result = await this.eventRepo.insert(newEvent);
+    return { result };
+  }
 
+  // user edit profile
+  //all are optional fields
   async editEvent({
+    event_id,
     name,
     type,
     description,
@@ -39,7 +59,25 @@ export class EventWorkflows {
     city,
     country,
     venue,
-  }: EditEventDto) {}
+  }: EditEventDto) {
+    let Searchevent = await this.eventRepo.fetchById(event_id);
+
+    const updatedEvent = await this.eventDomServ.editEvent(
+      name,
+      type,
+      description,
+      date,
+      city,
+      country,
+      venue,
+      Searchevent,
+    );
+
+    await this.eventRepo.update(updatedEvent);
+    return {
+      message: 'Resource Updated Successfully',
+    };
+  }
 
   async getEvent({ event_id }: GetEventDto) {}
 
@@ -55,6 +93,7 @@ export class EventWorkflows {
     user: User,
   ) {}
 
+  // drizzle repo in user repo take out user and seralize and send
   async fetchInterestedByListOfEvent({ event_id }: InteractionDto) {}
 
   async addToFavoritedByListOfEvent({ event_id }: InteractionDto, user: User) {}

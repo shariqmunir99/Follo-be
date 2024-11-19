@@ -16,6 +16,6 @@ export class AtLeastOnePropertyConstraint
   }
 
   defaultMessage(args: ValidationArguments) {
-    return 'At least one of new_password or new_username must be provided.';
+    return 'At least one property must be provided.';
   }
 }

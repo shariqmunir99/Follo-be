@@ -23,6 +23,7 @@ export class EventController {
   @Roles(Role.Organizer)
   @Put('/edit')
   async edit(@Body() body: EditEventDto) {
+    console.log('function k andar');
     return await this.wfs.editEvent(body);
   }
 

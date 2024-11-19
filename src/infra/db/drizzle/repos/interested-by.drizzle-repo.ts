@@ -12,6 +12,8 @@ import {
 } from 'src/domain/entities/interested-by/interested-by.entity';
 import { interestedByTbl } from '../models/interested-by.model';
 import { InterestedByNotFound } from 'src/domain/entities/interested-by/interested-by.errors';
+import { Event } from 'src/domain/entities/event/event.entity';
+import { eventTbl } from '../models/event.model';
 
 @Injectable()
 class InterestedByDrizzleRepo extends InterestedByRepository {
@@ -71,6 +73,14 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
       if (!interestedBy) {
         throw new InterestedByNotFound(id, 'eventId');
       }
+
+      let events = [];
+      for (var index in interestedBy) {
+        // console.log(favoritedBy[index]);
+        let temp = interestedBy[index].eventId;
+        events.push(temp);
+      }
+
       return interestedBy; //Returns the list of all the user ID's that have interested the event.
     } catch (e) {
       throw new InternalServerErrorException();

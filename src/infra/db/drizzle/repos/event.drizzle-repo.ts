@@ -55,11 +55,29 @@ class EventDrizzleRepo extends EventRepository {
       const event = await this.db
         .select()
         .from(eventTbl)
-        .where(eq(userTbl.id, id));
+        .where(eq(eventTbl.id, id));
       if (!event) {
         throw new EventNotFound(id);
       }
       return Event.fromSerialized(event[0]); // Return the User as is in case of successful insertion.
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async fetchEventsByUserId(userId: string): Promise<Event[]> {
+    try {
+      const events = await this.db
+        .select()
+        .from(eventTbl)
+        .where(eq(eventTbl.userId, userId));
+      if (!events) {
+        throw new EventNotFound(userId);
+      }
+
+      const result = events.map((event) => Event.fromSerialized(event));
+
+      return result; // Return the User as is in case of successful insertion.
     } catch (e) {
       throw new InternalServerErrorException();
     }
