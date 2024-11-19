@@ -100,11 +100,11 @@ export class EventWorkflows {
   }
 
   // drizzle repo in user repo take out user and seralize and send
-  // async fetchInterestedByListOfEvent({ event_id }: InteractionDto, user: User) {
-  //   this.userDomServ.isVerified(user);
-  //   const result = await this.interestedByRepo.fetchByEventId(event_id);
-  //   return result;
-  // }
+  async fetchInterestedByListOfEvent({ event_id }: InteractionDto, user: User) {
+    this.userDomServ.isVerified(user);
+    const result = await this.interestedByRepo.fetchByEventId(event_id);
+    return result;
+  }
 
   async addToFavoritedByListOfEvent({ event_id }: InteractionDto, user: User) {}
 
