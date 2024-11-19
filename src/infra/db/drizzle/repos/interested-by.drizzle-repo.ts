@@ -74,14 +74,13 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
         throw new InterestedByNotFound(id, 'eventId');
       }
 
-      let events = [];
+      let users = [];
       for (var index in interestedBy) {
         // console.log(favoritedBy[index]);
-        let temp = interestedBy[index].eventId;
-        events.push(temp);
+        let temp = interestedBy[index].userId;
+        users.push(temp);
       }
-
-      return events; //Returns the list of all the user ID's that have interested the event.
+      return users; //Returns the list of all the user ID's that have interested the event.
     } catch (e) {
       throw new InternalServerErrorException();
     }

@@ -95,11 +95,16 @@ export class EventWorkflows {
     user: User,
   ) {
     this.userDomServ.isVerified(user);
-    const result = await this.interestedByRepo.delete(user.id, event_id);
+    await this.interestedByRepo.delete(user.id, event_id);
+    return 'deleted successfully';
   }
 
   // drizzle repo in user repo take out user and seralize and send
-  async fetchInterestedByListOfEvent({ event_id }: InteractionDto) {}
+  // async fetchInterestedByListOfEvent({ event_id }: InteractionDto, user: User) {
+  //   this.userDomServ.isVerified(user);
+  //   const result = await this.interestedByRepo.fetchByEventId(event_id);
+  //   return result;
+  // }
 
   async addToFavoritedByListOfEvent({ event_id }: InteractionDto, user: User) {}
 
