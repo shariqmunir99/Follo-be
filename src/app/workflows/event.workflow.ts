@@ -74,7 +74,6 @@ export class EventWorkflows {
 
   async addToFavoritedByListOfEvent({ event_id }: InteractionDto, user: User) {
     this.userDomServ.isVerified(user);
-    console.log('function ke andar');
     const favouritedBy = FavoritedBy.new(user.id, event_id);
     await this.favoritedByRepo.insert(favouritedBy);
 
@@ -86,7 +85,14 @@ export class EventWorkflows {
   async deletefromFavoritedByListOfEvent(
     { event_id }: InteractionDto,
     user: User,
-  ) {}
+  ) {
+    this.userDomServ.isVerified(user);
+    this.favoritedByRepo.removeFromFavorited(user.id, event_id);
+
+    return {
+      message: 'removed from favorited list',
+    };
+  }
 
   async fetchFavoritedByListOfEvent({ event_id }: InteractionDto) {}
 }

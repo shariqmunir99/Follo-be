@@ -4,7 +4,7 @@ import {
   Provider,
 } from '@nestjs/common';
 import { DrizzleDB, InjectDb } from '../db-connection';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import {
   FavoritedBy,
   SerializedFavoritedBy,
@@ -38,6 +38,22 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       throw new FavoritedByNotFound(id);
+    }
+  }
+
+  async removeFromFavorited(userId: string, eventId: string) {
+    try {
+      await this.db
+        .delete(favoritedByTbl)
+        .where(
+          and(
+            eq(favoritedByTbl.userId, userId),
+            eq(favoritedByTbl.eventId, eventId),
+          ),
+        );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      throw new FavoritedByNotFound(userId);
     }
   }
 

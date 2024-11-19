@@ -66,7 +66,6 @@ export class EventController {
   @Roles(Role.User)
   @Post('/favorited-by')
   async addToFavoritedBy(@Body() body: InteractionDto, @Req() req) {
-    console.log('controller ke andar');
     return await this.wfs.addToFavoritedByListOfEvent(body, req.user);
   }
 
