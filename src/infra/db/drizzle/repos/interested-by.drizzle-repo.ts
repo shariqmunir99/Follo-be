@@ -47,6 +47,13 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
     }
   }
 
+  async deleteByEventId(eventId: string) {
+    await this.db
+      .delete(interestedByTbl)
+      .where(eq(interestedByTbl.eventId, eventId));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  }
+
   async fetchByUserId(id: string): Promise<SerializedInterestedBy[]> {
     try {
       const interestedBy = await this.db

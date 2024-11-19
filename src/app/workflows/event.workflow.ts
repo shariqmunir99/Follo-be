@@ -57,7 +57,15 @@ export class EventWorkflows {
   }
 
   async deleteEvent({ event_id }: DeleteEventDto) {
-    // const event = await this.eventRepo.fetchById(event_id);
+    const event = await this.eventRepo.fetchById(event_id);
+
+    await this.favoritedByRepo.deleteByEventId(event_id);
+    await this.interestedByRepo.deleteByEventId(event_id);
+    await this.eventRepo.delete(event_id);
+
+    return {
+      message: 'Event deleted successfuly',
+    };
   }
 
   async addToInterestedByListOfEvent(
