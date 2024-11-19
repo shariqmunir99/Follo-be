@@ -41,7 +41,18 @@ export class EventWorkflows {
     venue,
   }: EditEventDto) {}
 
-  async getEvent({ event_id }: GetEventDto) {}
+  async getEvent({ event_id }: GetEventDto) {
+    const event = await this.eventRepo.fetchById(event_id);
+    const favouritedBy = await this.favoritedByRepo.fetchByEventId(event_id);
+    // console.log(favouritedBy);
+    const interestedBy = await this.interestedByRepo.fetchByEventId(event_id);
+
+    return {
+      event: event,
+      'favourited by': favouritedBy,
+      'interested by': interestedBy,
+    };
+  }
 
   async deleteEvent({ event_id }: DeleteEventDto) {}
 

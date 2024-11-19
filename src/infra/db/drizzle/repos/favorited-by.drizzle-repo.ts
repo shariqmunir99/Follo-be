@@ -65,7 +65,16 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
       if (!favoritedBy) {
         throw new FavoritedByNotFound(id, 'eventId');
       }
-      return favoritedBy; //Returns the list of all the user ID's that have favorited the event.
+
+      //extracting the user id's
+      let users = [];
+      for (var index in favoritedBy) {
+        // console.log(favoritedBy[index]);
+        let temp = favoritedBy[index].userId;
+        users.push(temp);
+      }
+
+      return users; //Returns the list of all the user ID's that have favorited the event.
     } catch (e) {
       throw new InternalServerErrorException();
     }

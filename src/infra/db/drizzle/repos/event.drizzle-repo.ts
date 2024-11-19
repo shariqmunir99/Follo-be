@@ -55,7 +55,7 @@ class EventDrizzleRepo extends EventRepository {
       const event = await this.db
         .select()
         .from(eventTbl)
-        .where(eq(userTbl.id, id));
+        .where(eq(eventTbl.id, id));
       if (!event) {
         throw new EventNotFound(id);
       }
