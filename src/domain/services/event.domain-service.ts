@@ -5,35 +5,35 @@ import { Event } from '../entities/event/event.entity';
 @Injectable()
 export class EventDomainService {
   async editEvent(
-    newname,
-    newtype,
-    newdescription,
-    newdate,
-    newcity,
-    newcountry,
-    newvenue,
+    newName: string | null,
+    newType: string | null,
+    newDescription: string | null,
+    newDate: string | null,
+    newCity: string | null,
+    newCountry: string | null,
+    newVenue: string | null,
     event: Event,
   ) {
-    if (newname) {
-      event.nameUpdate(newname);
+    if (newName) {
+      event.nameUpdate(newName);
     }
-    if (newtype) {
-      event.typeUpdate(newtype);
+    if (newType) {
+      event.typeUpdate(newType);
     }
-    if (newdescription) {
-      event.descriptionUpdate(newdescription);
+    if (newDescription) {
+      event.descriptionUpdate(newDescription);
     }
-    if (newdate) {
-      event.dateUpdate(newdate);
+    if (newDate) {
+      event.dateUpdate(newDate);
     }
-    if (newcity) {
-      event.cityUpdate(newcity);
+    if (newCity) {
+      event.cityUpdate(newCity);
     }
-    if (newcountry) {
-      event.countryUpdate(newcountry);
+    if (newCountry) {
+      event.countryUpdate(newCountry);
     }
-    if (newvenue) {
-      event.venueUpdate(newvenue);
+    if (newVenue) {
+      event.venueUpdate(newVenue);
     }
     return event;
   }

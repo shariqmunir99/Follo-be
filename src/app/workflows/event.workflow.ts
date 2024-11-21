@@ -48,8 +48,6 @@ export class EventWorkflows {
     return { result };
   }
 
-  // user edit profile
-  //all are optional fields
   async editEvent({
     event_id,
     name,
@@ -73,7 +71,7 @@ export class EventWorkflows {
       Searchevent,
     );
 
-    await this.eventRepo.update(updatedEvent);
+    await this.eventRepo.update(updatedEvent); //updating data base
     return {
       message: 'Resource Updated Successfully',
     };
@@ -85,8 +83,8 @@ export class EventWorkflows {
 
   async addToInterestedByListOfEvent({ event_id }: InteractionDto, user: User) {
     this.userDomServ.isVerified(user);
-    const interstedBy = InterestedBy.new(user.id, event_id);
-    const result = await this.interestedByRepo.insert(interstedBy);
+    const interestedBy = InterestedBy.new(user.id, event_id);
+    const result = await this.interestedByRepo.insert(interestedBy);
     return { result };
   }
 
@@ -94,14 +92,11 @@ export class EventWorkflows {
     { event_id }: InteractionDto,
     user: User,
   ) {
-    this.userDomServ.isVerified(user);
     await this.interestedByRepo.delete(user.id, event_id);
-    return 'deleted successfully';
+    return { message: 'Resource deleted successfully' };
   }
 
-  // drizzle repo in user repo take out user and seralize and send
   async fetchInterestedByListOfEvent({ event_id }: InteractionDto, user: User) {
-    this.userDomServ.isVerified(user);
     const result = await this.interestedByRepo.fetchByEventId(event_id);
     return result;
   }

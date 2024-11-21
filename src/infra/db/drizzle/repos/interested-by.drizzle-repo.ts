@@ -14,10 +14,14 @@ import { interestedByTbl } from '../models/interested-by.model';
 import { InterestedByNotFound } from 'src/domain/entities/interested-by/interested-by.errors';
 import { Event } from 'src/domain/entities/event/event.entity';
 import { eventTbl } from '../models/event.model';
+import { UserRepository } from 'src/domain/entities/user/user.repository';
 
 @Injectable()
 class InterestedByDrizzleRepo extends InterestedByRepository {
-  constructor(@InjectDb() private readonly db: DrizzleDB) {
+  constructor(
+    @InjectDb() private readonly db: DrizzleDB,
+    private readonly userRepo: UserRepository,
+  ) {
     super();
   }
 
@@ -74,13 +78,14 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
         throw new InterestedByNotFound(id, 'eventId');
       }
 
-      let users = [];
-      for (var index in interestedBy) {
-        // console.log(favoritedBy[index]);
-        let temp = interestedBy[index].userId;
-        users.push(temp);
-      }
-      return users; //Returns the list of all the user ID's that have interested the event.
+      const users = await Promise.all(
+        interestedBy.map(async (row) => {
+          const { username } = await this.userRepo.fetchById(row.userId);
+          const temp = { username };
+          return temp;
+        }),
+      );
+      return users; //Returns the list of all the user names that have interested the event.
     } catch (e) {
       throw new InternalServerErrorException();
     }
