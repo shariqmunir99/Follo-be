@@ -12,10 +12,14 @@ import {
 } from 'src/domain/entities/interested-by/interested-by.entity';
 import { interestedByTbl } from '../models/interested-by.model';
 import { InterestedByNotFound } from 'src/domain/entities/interested-by/interested-by.errors';
+import { UserRepository } from 'src/domain/entities/user/user.repository';
 
 @Injectable()
 class InterestedByDrizzleRepo extends InterestedByRepository {
-  constructor(@InjectDb() private readonly db: DrizzleDB) {
+  constructor(
+    @InjectDb() private readonly db: DrizzleDB,
+    private readonly userRepo: UserRepository,
+  ) {
     super();
   }
 
@@ -48,9 +52,16 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
   }
 
   async deleteByEventId(eventId: string) {
-    await this.db
-      .delete(interestedByTbl)
-      .where(eq(interestedByTbl.eventId, eventId));
+    try {
+      await this.db
+        .delete(interestedByTbl)
+        .where(eq(interestedByTbl.eventId, eventId));
+    } catch (e) {
+      if (!(e instanceof InterestedByNotFound)) {
+        console.log(e.message);
+        throw new InternalServerErrorException();
+      }
+    }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   }
 
@@ -78,13 +89,14 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
       if (!interestedBy) {
         throw new InterestedByNotFound(id, 'eventId');
       }
-      //extracting the user id's
-      let users = [];
-      for (var index in interestedBy) {
-        // console.log(favoritedBy[index]);
-        let temp = interestedBy[index].userId;
-        users.push(temp);
-      }
+
+      const users = await Promise.all(
+        interestedBy.map(async (row) => {
+          const { username } = await this.userRepo.fetchById(row.userId);
+          const temp = { username };
+          return temp;
+        }),
+      );
       return users; //Returns the list of all the user ID's that have interested the event.
     } catch (e) {
       throw new InternalServerErrorException();

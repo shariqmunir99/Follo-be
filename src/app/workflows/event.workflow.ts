@@ -45,14 +45,19 @@ export class EventWorkflows {
 
   async getEvent({ event_id }: GetEventDto) {
     const event = await this.eventRepo.fetchById(event_id);
+    const orgId = event.userId;
+
+    const orgUsername = (await this.userRepo.fetchById(orgId)).username;
+
     const favouritedBy = await this.favoritedByRepo.fetchByEventId(event_id);
-    // console.log(favouritedBy);
     const interestedBy = await this.interestedByRepo.fetchByEventId(event_id);
 
+    const stats = {
+      favourites: favouritedBy.length,
+      interests: interestedBy.length,
+    };
     return {
-      event: event,
-      'favourited by': favouritedBy,
-      'interested by': interestedBy,
+      result: { organizer: orgUsername, ...event, ...stats },
     };
   }
 
@@ -64,7 +69,7 @@ export class EventWorkflows {
     await this.eventRepo.delete(event_id);
 
     return {
-      message: 'Event deleted successfuly',
+      message: 'Resource deleted successfully.',
     };
   }
 
@@ -86,7 +91,7 @@ export class EventWorkflows {
     await this.favoritedByRepo.insert(favouritedBy);
 
     return {
-      message: 'event successfuly favourited.',
+      message: 'Resource added successfully.',
     };
   }
 
@@ -94,11 +99,10 @@ export class EventWorkflows {
     { event_id }: InteractionDto,
     user: User,
   ) {
-    this.userDomServ.isVerified(user);
-    this.favoritedByRepo.removeFromFavorited(user.id, event_id);
+    this.favoritedByRepo.delete(user.id, event_id);
 
     return {
-      message: 'removed from favorited list',
+      message: 'Resource deleted successfully.',
     };
   }
 
