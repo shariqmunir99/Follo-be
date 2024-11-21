@@ -85,7 +85,7 @@ export class EventWorkflows {
     this.userDomServ.isVerified(user);
     const interestedBy = InterestedBy.new(user.id, event_id);
     const result = await this.interestedByRepo.insert(interestedBy);
-    return { result };
+    return { message: 'Resource added successfully' };
   }
 
   async deletefromInterestedByListOfEvent(
