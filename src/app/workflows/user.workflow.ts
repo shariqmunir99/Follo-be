@@ -17,7 +17,7 @@ export class UserWorkflows {
     private readonly followRepo: FollowRepository,
     private readonly interestedByRepo: InterestedByRepository,
     private readonly favoritedByRepo: FavoritedByRepository,
-    private readonly roleyRepo: RoleRepository,
+    private readonly roleRepo: RoleRepository,
     private readonly userDomServ: UserDomainService,
   ) {}
 
@@ -43,15 +43,18 @@ export class UserWorkflows {
     const roleId = user.roleID;
 
     // getting the role from the role table
-    const role = await this.roleyRepo.fetchById(roleId);
+    const role = await this.roleRepo.fetchById(roleId);
+    let stats = {};
 
     if (role.roleName === 'User') {
-      const userStats = await this.getUserStats(user.id);
-      return userStats;
+      stats = await this.getUserStats(user.id);
     } else if (role.roleName === 'Organizer') {
-      const organizerStats = await this.getOrganizerStats(user.id);
-      return organizerStats;
+      stats = await this.getOrganizerStats(user.id);
     }
+
+    return {
+      result: { ...user, ...stats },
+    };
   }
 
   // calculated the stats of the organizer
@@ -59,14 +62,12 @@ export class UserWorkflows {
     // get all the events of the organizer
     const events = await this.eventRepo.fetchByOrganizerId(orgId);
     let interestsCount = 0;
-    let favoritesCount = 0;
 
     // get the favorite and interest count of each event
     for (let index in events) {
       const eventId = events[index].id; // extracting the event id of an event
       const eventStats = await this.getEventStats(eventId); // getting the stats for that specific event
 
-      favoritesCount += eventStats.Favorites;
       interestsCount += eventStats.Interests;
     }
 
@@ -74,8 +75,8 @@ export class UserWorkflows {
     const followers = await this.followRepo.fetchFollowers(orgId);
 
     return {
-      favorites: favoritesCount,
-      interests: interestsCount,
+      posts: events.length,
+      interactions: interestsCount,
       followers: followers.length,
     };
   }
