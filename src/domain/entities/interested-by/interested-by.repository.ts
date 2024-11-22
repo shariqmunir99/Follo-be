@@ -4,5 +4,5 @@ export abstract class InterestedByRepository {
   abstract insert(entity: InterestedBy);
   abstract delete(userId: string, eventId: string);
   abstract fetchByEventId(id: string);
-  abstract fetchByUserId(id: string): Promise<SerializedInterestedBy[]>;
+  abstract fetchByUserId(id: string): Promise<{ name: string }[]>;
 }

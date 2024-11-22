@@ -15,12 +15,14 @@ import { InterestedByNotFound } from 'src/domain/entities/interested-by/interest
 import { Event } from 'src/domain/entities/event/event.entity';
 import { eventTbl } from '../models/event.model';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
+import { EventRepository } from 'src/domain/entities/event/event.repository';
 
 @Injectable()
 class InterestedByDrizzleRepo extends InterestedByRepository {
   constructor(
     @InjectDb() private readonly db: DrizzleDB,
     private readonly userRepo: UserRepository,
+    private readonly eventRepo: EventRepository,
   ) {
     super();
   }
@@ -53,21 +55,36 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
     }
   }
 
-  async fetchByUserId(id: string): Promise<SerializedInterestedBy[]> {
+  async fetchByUserId(id: string): Promise<{ name: string }[]> {
     try {
+      // Fetching the events the user is interested in
       const interestedBy = await this.db
         .select()
         .from(interestedByTbl)
         .where(eq(interestedByTbl.userId, id));
-      if (!interestedBy) {
+
+      // Check if the user is not interested in any events
+      if (interestedBy.length === 0) {
         throw new InterestedByNotFound(id, 'userId');
       }
-      return interestedBy; //Returns the list of all the events ID's interested by the user.
+
+      // Fetch event names in parallel for all interested events
+      const events = await Promise.all(
+        interestedBy.map(async (row) => {
+          // Assuming that row contains eventId and we fetch event by eventId
+          const { name } = await this.eventRepo.fetchById(row.eventId); // Make sure to use `eventId`
+          const temp = { name };
+          return temp; // Return the event name
+        }),
+      );
+
+      // Return the list of event names
+      return events;
     } catch (e) {
+      // Log or handle error if needed, but always rethrow the exception
       throw new InternalServerErrorException();
     }
   }
-
   async fetchByEventId(id: string) {
     try {
       const interestedBy = await this.db
