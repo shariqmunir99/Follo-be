@@ -4,7 +4,7 @@ import {
   Provider,
 } from '@nestjs/common';
 import { DrizzleDB, InjectDb } from '../db-connection';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { FavoritedByNotFound } from 'src/domain/entities/favorited-by/favorited-by.errors';
 import { FollowRepository } from 'src/domain/entities/follow/follow.repository';
 import {
@@ -38,6 +38,22 @@ class FollowDrizzleRepo extends FollowRepository {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       throw new FollowNotFound(id);
+    }
+  }
+
+  async deleteFollowing(organizerId: string, userId: string) {
+    try {
+      await this.db
+        .delete(followTbl)
+        .where(
+          and(
+            eq(followTbl.followingId, organizerId),
+            eq(followTbl.followerId, userId),
+          ),
+        );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      throw new FollowNotFound(organizerId);
     }
   }
 

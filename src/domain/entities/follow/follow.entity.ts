@@ -14,8 +14,8 @@ export class Follow extends BaseEntity implements IFollow {
     super();
   }
 
-  static new(userId: string, eventId: string) {
-    return new Follow(userId, eventId);
+  static new(userId: string, orgId: string) {
+    return new Follow(userId, orgId);
   }
 
   serialize(): SerializedFollow {
