@@ -23,7 +23,7 @@ export class UserController {
     return await this.wfs.editProfile(body, req.user);
   }
 
-  @Get()
+  @Get('/details')
   async getProfile(@Req() req) {
     return await this.wfs.getProfile(req.user);
   }

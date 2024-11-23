@@ -4,7 +4,7 @@ import {
   Provider,
 } from '@nestjs/common';
 import { DrizzleDB, InjectDb } from '../db-connection';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import {
   FavoritedBy,
   SerializedFavoritedBy,
@@ -12,10 +12,14 @@ import {
 import { FavoritedByRepository } from 'src/domain/entities/favorited-by/favorited-by.repository';
 import { favoritedByTbl } from '../models/favorited-by.model';
 import { FavoritedByNotFound } from 'src/domain/entities/favorited-by/favorited-by.errors';
+import { UserRepository } from 'src/domain/entities/user/user.repository';
 
 @Injectable()
 class FavoritedByDrizzleRepo extends FavoritedByRepository {
-  constructor(@InjectDb() private readonly db: DrizzleDB) {
+  constructor(
+    @InjectDb() private readonly db: DrizzleDB,
+    private readonly userRepo: UserRepository,
+  ) {
     super();
   }
 
@@ -32,12 +36,33 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
     }
   }
 
-  async delete(id: string) {
+  async deleteByEventId(eventId: string) {
     try {
-      await this.db.delete(favoritedByTbl).where(eq(favoritedByTbl.id, id));
+      await this.db
+        .delete(favoritedByTbl)
+        .where(eq(favoritedByTbl.eventId, eventId));
+    } catch (e) {
+      if (!(e instanceof FavoritedByNotFound)) {
+        console.log(e.message);
+        throw new InternalServerErrorException();
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  }
+
+  async delete(userId: string, eventId: string) {
+    try {
+      await this.db
+        .delete(favoritedByTbl)
+        .where(
+          and(
+            eq(favoritedByTbl.userId, userId),
+            eq(favoritedByTbl.eventId, eventId),
+          ),
+        );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      throw new FavoritedByNotFound(id);
+      throw new FavoritedByNotFound(userId);
     }
   }
 
@@ -56,7 +81,7 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
     }
   }
 
-  async fetchByEventId(id: string) {
+  async fetchByEventId(id: string): Promise<{ username: string }[]> {
     try {
       const favoritedBy = await this.db
         .select()
@@ -65,7 +90,16 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
       if (!favoritedBy) {
         throw new FavoritedByNotFound(id, 'eventId');
       }
-      return favoritedBy; //Returns the list of all the user ID's that have favorited the event.
+
+      const users = await Promise.all(
+        favoritedBy.map(async (row) => {
+          const { username } = await this.userRepo.fetchById(row.userId);
+          const temp = { username };
+          return temp;
+        }),
+      );
+
+      return users; //Returns the usernames
     } catch (e) {
       throw new InternalServerErrorException();
     }

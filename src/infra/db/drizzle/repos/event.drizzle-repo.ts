@@ -65,19 +65,17 @@ class EventDrizzleRepo extends EventRepository {
     }
   }
 
-  async fetchEventsByUserId(userId: string): Promise<Event[]> {
+
+  async fetchByOrganizerId(orgId: string) {
     try {
-      const events = await this.db
+      const event = await this.db
         .select()
         .from(eventTbl)
-        .where(eq(eventTbl.userId, userId));
-      if (!events) {
-        throw new EventNotFound(userId);
+        .where(eq(eventTbl.userId, orgId));
+      if (!event) {
+        throw new EventNotFound(orgId);
       }
-
-      const result = events.map((event) => Event.fromSerialized(event));
-
-      return result; // Return the User as is in case of successful insertion.
+      return event; // returns the list of all events created by an organizer
     } catch (e) {
       throw new InternalServerErrorException();
     }

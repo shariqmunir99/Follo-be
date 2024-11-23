@@ -9,16 +9,20 @@ import { InterestedByRepository } from 'src/domain/entities/interested-by/intere
 import { InterestedBy } from 'src/domain/entities/interested-by/interested-by.entity';
 import { interestedByTbl } from '../models/interested-by.model';
 import { InterestedByNotFound } from 'src/domain/entities/interested-by/interested-by.errors';
+
 import { Event } from 'src/domain/entities/event/event.entity';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
+
 
 @Injectable()
 class InterestedByDrizzleRepo extends InterestedByRepository {
   constructor(
     @InjectDb() private readonly db: DrizzleDB,
     private readonly userRepo: UserRepository,
+
     private readonly eventRepo: EventRepository,
+
   ) {
     super();
   }
@@ -52,6 +56,7 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
   }
 
   async fetchByUserId(id: string): Promise<Event[]> {
+
     try {
       // Fetching the events the user is interested in
       const interestedBy = await this.db
@@ -95,7 +100,9 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
           return temp;
         }),
       );
+
       return users; //Returns the list of all the user names that have interested the event.
+
     } catch (e) {
       throw new InternalServerErrorException();
     }
