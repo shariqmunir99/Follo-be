@@ -26,6 +26,9 @@ export class CreateEventDto {
 
 export class EditEventDto {
   @IsString()
+  event_id: string;
+
+  @IsString()
   @IsOptional()
   name: string;
 

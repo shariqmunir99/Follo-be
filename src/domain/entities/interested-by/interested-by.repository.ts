@@ -1,3 +1,4 @@
+import { Event } from '../event/event.entity';
 import { InterestedBy, SerializedInterestedBy } from './interested-by.entity';
 
 export abstract class InterestedByRepository {
@@ -5,5 +6,5 @@ export abstract class InterestedByRepository {
   abstract delete(userId: string, eventId: string);
   abstract deleteByEventId(eventId: string);
   abstract fetchByEventId(id: string);
-  abstract fetchByUserId(id: string): Promise<SerializedInterestedBy[]>;
+  abstract fetchByUserId(id: string): Promise<Event[]>;
 }

@@ -68,6 +68,35 @@ export class Event extends BaseEntity implements IEvent {
     );
   }
 
+  nameUpdate(newname: string) {
+    this.name = newname;
+    this.markUpdated();
+  }
+  typeUpdate(newType: string) {
+    this.type = newType;
+    this.markUpdated();
+  }
+  descriptionUpdate(newDescription: string) {
+    this.description = newDescription;
+    this.markUpdated();
+  }
+  dateUpdate(newDate: string) {
+    this.date = new Date(newDate);
+    this.markUpdated();
+  }
+  cityUpdate(newCity: string) {
+    this.city = newCity;
+    this.markUpdated();
+  }
+  countryUpdate(newCountry: string) {
+    this.country = newCountry;
+    this.markUpdated();
+  }
+  venueUpdate(newVenue: string) {
+    this.venue = newVenue;
+    this.markUpdated();
+  }
+
   forUpdate(): EventUpdateData {
     return {
       ...super.forUpdate(),

@@ -6,19 +6,23 @@ import {
 import { DrizzleDB, InjectDb } from '../db-connection';
 import { and, eq } from 'drizzle-orm';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
-import {
-  InterestedBy,
-  SerializedInterestedBy,
-} from 'src/domain/entities/interested-by/interested-by.entity';
+import { InterestedBy } from 'src/domain/entities/interested-by/interested-by.entity';
 import { interestedByTbl } from '../models/interested-by.model';
 import { InterestedByNotFound } from 'src/domain/entities/interested-by/interested-by.errors';
+
+import { Event } from 'src/domain/entities/event/event.entity';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
+import { EventRepository } from 'src/domain/entities/event/event.repository';
+
 
 @Injectable()
 class InterestedByDrizzleRepo extends InterestedByRepository {
   constructor(
     @InjectDb() private readonly db: DrizzleDB,
     private readonly userRepo: UserRepository,
+
+    private readonly eventRepo: EventRepository,
+
   ) {
     super();
   }
@@ -51,35 +55,34 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
     }
   }
 
-  async deleteByEventId(eventId: string) {
-    try {
-      await this.db
-        .delete(interestedByTbl)
-        .where(eq(interestedByTbl.eventId, eventId));
-    } catch (e) {
-      if (!(e instanceof InterestedByNotFound)) {
-        console.log(e.message);
-        throw new InternalServerErrorException();
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  }
+  async fetchByUserId(id: string): Promise<Event[]> {
 
-  async fetchByUserId(id: string): Promise<SerializedInterestedBy[]> {
     try {
+      // Fetching the events the user is interested in
       const interestedBy = await this.db
         .select()
         .from(interestedByTbl)
         .where(eq(interestedByTbl.userId, id));
-      if (!interestedBy) {
+
+      // Check if the user is not interested in any events
+      if (interestedBy.length === 0) {
         throw new InterestedByNotFound(id, 'userId');
       }
-      return interestedBy; //Returns the list of all the events ID's interested by the user.
+
+      // Fetch event names in parallel for all interested events
+      const events = await Promise.all(
+        interestedBy.map(
+          async (row) => await this.eventRepo.fetchById(row.eventId), // Make sure to use `eventId`
+        ),
+      );
+
+      // Return the list of event names
+      return events;
     } catch (e) {
+      // Log or handle error if needed, but always rethrow the exception
       throw new InternalServerErrorException();
     }
   }
-
   async fetchByEventId(id: string) {
     try {
       const interestedBy = await this.db
@@ -97,7 +100,9 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
           return temp;
         }),
       );
-      return users; //Returns the list of all the user ID's that have interested the event.
+
+      return users; //Returns the list of all the user names that have interested the event.
+
     } catch (e) {
       throw new InternalServerErrorException();
     }

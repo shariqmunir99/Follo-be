@@ -65,6 +65,7 @@ class EventDrizzleRepo extends EventRepository {
     }
   }
 
+
   async fetchByOrganizerId(orgId: string) {
     try {
       const event = await this.db

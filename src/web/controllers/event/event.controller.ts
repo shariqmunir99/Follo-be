@@ -49,8 +49,8 @@ export class EventController {
   //Only an organizer can access this route.
   @Roles(Role.Organizer)
   @Get('/interested-by')
-  async fetchInterestedBy(@Body() body: InteractionDto) {
-    return await this.wfs.fetchInterestedByListOfEvent(body);
+  async fetchInterestedBy(@Body() body: InteractionDto, @Req() req) {
+    return await this.wfs.fetchInterestedByListOfEvent(body, req.user);
   }
 
   //To remove a user from an event's interstedBy List.

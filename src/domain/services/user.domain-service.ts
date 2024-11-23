@@ -31,5 +31,6 @@ export class UserDomainService {
     if (user.isVerified) {
       return;
     }
+    throw new UnverifiedUser(user.id);
   }
 }
