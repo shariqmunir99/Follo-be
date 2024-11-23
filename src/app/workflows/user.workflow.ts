@@ -46,13 +46,13 @@ export class UserWorkflows {
   }
 
   async removeFollow({ organizer_id }: FollowDto, user: User) {
-    await this.followRepo.deleteFollowing(organizer_id, user.id);
+    await this.followRepo.delete(organizer_id, user.id);
     return { message: 'Resource deleted successfully' };
   }
 
   async fetchInterestedEvents(user: User) {
-    const result = await this.interestedByRepo.fetchByUserId(user.id); //this function gives the names of the events that are interested by the user
-    return result;
+    const result = await this.interestedByRepo.fetchByUserId(user.id);
+    return { result: result };
   }
 
   async fetchFavoritedEvents(user: User) {}

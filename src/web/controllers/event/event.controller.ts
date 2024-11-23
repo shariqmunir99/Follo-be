@@ -23,7 +23,6 @@ export class EventController {
   @Roles(Role.Organizer)
   @Put('/edit')
   async edit(@Body() body: EditEventDto) {
-    console.log('function k andar');
     return await this.wfs.editEvent(body);
   }
 
@@ -57,7 +56,7 @@ export class EventController {
   //To remove a user from an event's interstedBy List.
   //Only a user can access this route.
   @Roles(Role.User)
-  @Delete('interested-by')
+  @Delete('/interested-by')
   async deleteInterestedBy(@Body() body: InteractionDto, @Req() req) {
     return await this.wfs.deletefromInterestedByListOfEvent(body, req.user);
   }

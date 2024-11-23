@@ -6,14 +6,10 @@ import {
 import { DrizzleDB, InjectDb } from '../db-connection';
 import { and, eq } from 'drizzle-orm';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
-import {
-  InterestedBy,
-  SerializedInterestedBy,
-} from 'src/domain/entities/interested-by/interested-by.entity';
+import { InterestedBy } from 'src/domain/entities/interested-by/interested-by.entity';
 import { interestedByTbl } from '../models/interested-by.model';
 import { InterestedByNotFound } from 'src/domain/entities/interested-by/interested-by.errors';
 import { Event } from 'src/domain/entities/event/event.entity';
-import { eventTbl } from '../models/event.model';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
 
@@ -55,7 +51,7 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
     }
   }
 
-  async fetchByUserId(id: string): Promise<{ name: string }[]> {
+  async fetchByUserId(id: string): Promise<Event[]> {
     try {
       // Fetching the events the user is interested in
       const interestedBy = await this.db
@@ -70,12 +66,9 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
 
       // Fetch event names in parallel for all interested events
       const events = await Promise.all(
-        interestedBy.map(async (row) => {
-          // Assuming that row contains eventId and we fetch event by eventId
-          const { name } = await this.eventRepo.fetchById(row.eventId); // Make sure to use `eventId`
-          const temp = { name };
-          return temp; // Return the event name
-        }),
+        interestedBy.map(
+          async (row) => await this.eventRepo.fetchById(row.eventId), // Make sure to use `eventId`
+        ),
       );
 
       // Return the list of event names

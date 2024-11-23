@@ -32,16 +32,7 @@ class FollowDrizzleRepo extends FollowRepository {
     }
   }
 
-  async delete(id: string) {
-    try {
-      await this.db.delete(followTbl).where(eq(followTbl.id, id));
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      throw new FollowNotFound(id);
-    }
-  }
-
-  async deleteFollowing(organizerId: string, userId: string) {
+  async delete(organizerId: string, userId: string) {
     try {
       await this.db
         .delete(followTbl)
