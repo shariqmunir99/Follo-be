@@ -14,7 +14,6 @@ import { Event } from 'src/domain/entities/event/event.entity';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
 
-
 @Injectable()
 class InterestedByDrizzleRepo extends InterestedByRepository {
   constructor(
@@ -22,7 +21,6 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
     private readonly userRepo: UserRepository,
 
     private readonly eventRepo: EventRepository,
-
   ) {
     super();
   }
@@ -55,8 +53,21 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
     }
   }
 
-  async fetchByUserId(id: string): Promise<Event[]> {
+  async deleteByEventId(eventId: string) {
+    try {
+      await this.db
+        .delete(interestedByTbl)
+        .where(eq(interestedByTbl.eventId, eventId));
+    } catch (e) {
+      if (!(e instanceof InterestedByNotFound)) {
+        console.log(e.message);
+        throw new InternalServerErrorException();
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  }
 
+  async fetchByUserId(id: string): Promise<Event[]> {
     try {
       // Fetching the events the user is interested in
       const interestedBy = await this.db
@@ -102,7 +113,6 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
       );
 
       return users; //Returns the list of all the user names that have interested the event.
-
     } catch (e) {
       throw new InternalServerErrorException();
     }

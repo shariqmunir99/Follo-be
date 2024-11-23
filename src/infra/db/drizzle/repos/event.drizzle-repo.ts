@@ -4,7 +4,6 @@ import {
   Provider,
 } from '@nestjs/common';
 import { DrizzleDB, InjectDb } from '../db-connection';
-import { userTbl } from '../models/user.model';
 import { eq } from 'drizzle-orm';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
 import { Event } from 'src/domain/entities/event/event.entity';
@@ -64,7 +63,6 @@ class EventDrizzleRepo extends EventRepository {
       throw new InternalServerErrorException();
     }
   }
-
 
   async fetchByOrganizerId(orgId: string) {
     try {

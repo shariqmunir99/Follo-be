@@ -25,7 +25,7 @@ export class EventWorkflows {
     private readonly userRepo: UserRepository,
     private readonly favoritedByRepo: FavoritedByRepository,
     private readonly eventDomServ: EventDomainService,
-    private readonly userDomServ: UserDomain
+    private readonly userDomServ: UserDomainService,
   ) {}
 
   async createEvent(
@@ -57,7 +57,7 @@ export class EventWorkflows {
     country,
     venue,
   }: EditEventDto) {
-    let Searchevent = await this.eventRepo.fetchById(event_id);
+    let event = await this.eventRepo.fetchById(event_id);
 
     const updatedEvent = await this.eventDomServ.editEvent(
       name,
@@ -67,7 +67,7 @@ export class EventWorkflows {
       city,
       country,
       venue,
-      Searchevent,
+      event,
     );
 
     await this.eventRepo.update(updatedEvent); //updating data base

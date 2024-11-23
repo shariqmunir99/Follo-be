@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { EditEventDto } from 'src/app/dtos/event.dto';
 import { EventRepository } from '../entities/event/event.repository';
-
+import { Event } from '../entities/event/event.entity';
 
 @Injectable()
 export class EventDomainService {
