@@ -33,6 +33,16 @@ export class ResetReqDrizzleRepo extends ResetRequestRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteByUserId(userId: string) {
+    try {
+      await this.db.delete(resetReqTbl).where(eq(resetReqTbl.userId, userId));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      throw new InternalServerErrorException(userId);
+    }
+  }
+
   async fetchById(id: ResetRequest['id']): Promise<ResetRequest> {
     try {
       const entity = await this.db

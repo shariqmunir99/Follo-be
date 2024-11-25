@@ -50,6 +50,20 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   }
 
+  async deleteByUserId(userId: string) {
+    try {
+      await this.db
+        .delete(favoritedByTbl)
+        .where(eq(favoritedByTbl.userId, userId));
+    } catch (e) {
+      if (!(e instanceof FavoritedByNotFound)) {
+        console.log(e.message);
+        throw new InternalServerErrorException();
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  }
+
   async delete(userId: string, eventId: string) {
     try {
       await this.db

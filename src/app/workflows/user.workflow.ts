@@ -11,7 +11,8 @@ import { Follow } from 'src/domain/entities/follow/follow.entity';
 
 import { RoleRepository } from 'src/domain/entities/role/role.repository';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
-
+import { VerifyRequestRepository } from 'src/domain/entities/verify-requests/verify-request.repository';
+import { ResetRequestRepository } from 'src/domain/entities/reset-requests/reset-request.repository';
 
 @Injectable()
 export class UserWorkflows {
@@ -22,6 +23,8 @@ export class UserWorkflows {
     private readonly interestedByRepo: InterestedByRepository,
     private readonly favoritedByRepo: FavoritedByRepository,
     private readonly roleRepo: RoleRepository,
+    private readonly verifyRequestRep: VerifyRequestRepository,
+    private readonly resetRequestRepo: ResetRequestRepository,
     private readonly userDomServ: UserDomainService,
   ) {}
 
@@ -143,6 +146,58 @@ export class UserWorkflows {
 
     return {
       result: favouriteEvents,
+    };
+  }
+
+  async deleteUser(user: User) {
+    // delete from verify request table
+    await this.verifyRequestRep.deleteByUserId(user.id);
+    console.log('verify deleted');
+
+    // delete from the reset request table
+    await this.resetRequestRepo.deleteByUserId(user.id);
+    console.log('reset deleted');
+
+    // delete from the follow table if the user if the user is not an organizer
+    await this.followRepo.deleteByFollowerId(user.id);
+    console.log('follower deleted');
+
+    // delete from the interested-by table
+    await this.interestedByRepo.deleteByUserId(user.id);
+    console.log('interested deleted');
+
+    // delete from the favorited-by table
+    await this.favoritedByRepo.deleteByUserId(user.id);
+    console.log('favorited deleted');
+
+    // delete from the events table if the user is an organizer, also remove from the follow table
+    const roleId = user.roleID;
+    const role = await this.roleRepo.fetchById(roleId);
+
+    if (role.roleName === 'Organizer') {
+      console.log('if ke andar');
+
+      await this.followRepo.deleteByFollowingId(user.id);
+      console.log('following deleted');
+
+      // fetch all the events created by the organizer and then one by one delete them all
+      const events = await this.eventRepo.fetchByOrganizerId(user.id);
+      for (let index in events) {
+        const eventId = events[index].id;
+        await this.favoritedByRepo.deleteByEventId(eventId);
+        await this.interestedByRepo.deleteByEventId(eventId);
+        await this.eventRepo.delete(eventId);
+      }
+      console.log('events deleted');
+    }
+    console.log('event and following deleted');
+
+    // delete from the user table
+    await this.userRepo.delete(user.id);
+    console.log('user deleted');
+
+    return {
+      message: 'Resource deleted successfully.',
     };
   }
 }

@@ -31,6 +31,16 @@ export class VerifyReqDrizzleRepo extends VerifyRequestRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteByUserId(userId: string) {
+    try {
+      await this.db.delete(verifyReqTbl).where(eq(verifyReqTbl.userId, userId));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      throw new InternalServerErrorException(userId);
+    }
+  }
+
   async fetchById(id: VerifyRequest['id']): Promise<VerifyRequest> {
     try {
       const entity = await this.db

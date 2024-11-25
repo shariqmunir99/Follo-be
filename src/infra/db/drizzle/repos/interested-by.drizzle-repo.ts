@@ -53,6 +53,20 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
     }
   }
 
+  async deleteByUserId(userId: string) {
+    try {
+      await this.db
+        .delete(interestedByTbl)
+        .where(eq(interestedByTbl.userId, userId));
+    } catch (e) {
+      if (!(e instanceof InterestedByNotFound)) {
+        console.log(e.message);
+        throw new InternalServerErrorException();
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  }
+
   async deleteByEventId(eventId: string) {
     try {
       await this.db
