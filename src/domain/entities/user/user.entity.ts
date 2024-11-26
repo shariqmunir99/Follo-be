@@ -11,6 +11,7 @@ export interface IUser extends IEntity {
   pwHashed: string;
   isVerified: boolean;
   roleID: string;
+  location: string;
 }
 export type SerializedUser = SimpleSerialized<IUser>;
 type UserUpdateData = Omitt<IUser, 'id' | 'createdAt' | 'email' | 'roleID'>;
@@ -19,17 +20,20 @@ export class User extends BaseEntity implements IUser {
   pwHashed: string;
   isVerified: boolean;
   username: string;
+  location: string;
   private constructor(
     username: string,
     readonly email: string,
     pwHashed: string,
     isVerified: boolean,
     readonly roleID: string,
+    location: string,
   ) {
     super();
     this.username = username;
     this.pwHashed = pwHashed;
     this.isVerified = isVerified;
+    this.location = location;
   }
 
   static new(
@@ -37,8 +41,9 @@ export class User extends BaseEntity implements IUser {
     email: string,
     pwHashed: string,
     roleID: string,
+    location: string,
   ) {
-    return new User(username, email, pwHashed, false, roleID);
+    return new User(username, email, pwHashed, false, roleID, location);
   }
 
   forUpdate(): UserUpdateData {
@@ -47,6 +52,7 @@ export class User extends BaseEntity implements IUser {
       username: this.username,
       pwHashed: this.pwHashed,
       isVerified: this.isVerified,
+      location: this.location,
     };
   }
 
@@ -65,6 +71,10 @@ export class User extends BaseEntity implements IUser {
     this.username = newUsername;
     this.markUpdated();
   }
+  locationUpdate(newLocation: string) {
+    this.location = newLocation;
+    this.markUpdated();
+  }
   passwordUpdate(newPwHash: string) {
     this.pwHashed = newPwHash;
     this.markUpdated;
@@ -76,6 +86,7 @@ export class User extends BaseEntity implements IUser {
       other.pwHashed,
       other.isVerified,
       other.roleID,
+      other.location,
     );
     ent._fromSerialized(other);
 
@@ -89,6 +100,7 @@ export class User extends BaseEntity implements IUser {
       pwHashed: this.pwHashed,
       isVerified: this.isVerified,
       roleID: this.roleID,
+      location: this.location,
     };
   }
 }

@@ -8,6 +8,7 @@ export const userTbl = pgTable('users', {
   email: text('email').notNull().unique(),
   pwHashed: text('pwHashed').notNull(),
   isVerified: boolean('isVerified').default(false).notNull(),
+  location: text('location').default('Lahore,Pakistan').notNull(),
   roleID: uuid('roleID')
     .notNull()
     .references(() => roleTbl.id),

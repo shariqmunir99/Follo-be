@@ -10,6 +10,7 @@ export class UserDomainService {
     user: User,
     newUsername: string | null,
     newPassword: string | null,
+    newLocation: string | null,
   ) {
     const isVerified = user.isVerified;
 
@@ -22,6 +23,10 @@ export class UserDomainService {
     if (newPassword) {
       const newPwHash = await this.pwHasher.hashPassword(newPassword);
       user.passwordUpdate(newPwHash);
+    }
+
+    if (newLocation) {
+      user.locationUpdate(newLocation);
     }
 
     return user;

@@ -77,7 +77,8 @@ export class AuthWorkflows {
   }
 
   async signUp(credentials: SignUpDto) {
-    const { username, email, password, isOrganizer, baseUrl } = credentials;
+    const { username, email, password, isOrganizer, baseUrl, location } =
+      credentials;
 
     // creating the new user
     const hashed_password = await this.pwHasher.hashPassword(password);
@@ -87,7 +88,7 @@ export class AuthWorkflows {
       role = await this.roleRepo.fetchByRole('Organizer');
     } else role = await this.roleRepo.fetchByRole('User');
 
-    const user = User.new(username, email, hashed_password, role.id);
+    const user = User.new(username, email, hashed_password, role.id, location);
     const verify_request = VerifyRequest.new(user.id);
 
     await this.userRepo.insert(user);
