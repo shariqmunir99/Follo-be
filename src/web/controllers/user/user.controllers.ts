@@ -54,6 +54,6 @@ export class UserController {
 
   @Delete('/delete')
   async deleteUser(@Req() req) {
-    return await this.wfs.deleteUser(req.user);
+    return await this.wfs.delete(req.user);
   }
 }

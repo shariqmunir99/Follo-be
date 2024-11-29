@@ -14,7 +14,7 @@ export class UserDomainService {
   ) {
     const isVerified = user.isVerified;
 
-    if (!isVerified) throw new UnverifiedUser(user.id);
+    if (!isVerified) throw new UnverifiedUser();
 
     if (newUsername) {
       user.usernameUpdate(newUsername);
@@ -36,6 +36,6 @@ export class UserDomainService {
     if (user.isVerified) {
       return;
     }
-    throw new UnverifiedUser(user.id);
+    throw new UnverifiedUser();
   }
 }

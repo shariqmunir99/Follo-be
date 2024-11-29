@@ -22,8 +22,8 @@ export class InvalidCredentials extends HttpException {
   }
 }
 
-export class UnverifiedUser extends GuardViolationError {
-  constructor(readonly id: UUID) {
-    super('Please verify your account');
+export class UnverifiedUser extends HttpException {
+  constructor() {
+    super('Please verify your account', HttpStatus.UNAUTHORIZED);
   }
 }

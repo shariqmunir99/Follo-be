@@ -58,18 +58,11 @@ class UserDrizzleRepo extends UserRepository {
   }
 
   async fetchById(id: string): Promise<User> {
-    try {
-      const user = await this.db
-        .select()
-        .from(userTbl)
-        .where(eq(userTbl.id, id));
-      if (!user) {
-        throw new UserNotFound(id);
-      }
-      return User.fromSerialized(user[0]); // Return the User as is in case of successful insertion.
-    } catch (e) {
-      throw new InternalServerErrorException();
+    const user = await this.db.select().from(userTbl).where(eq(userTbl.id, id));
+    if (!user.length) {
+      throw new UserNotFound(id);
     }
+    return User.fromSerialized(user[0]); // Return the User as is in case of successful insertion.
   }
 
   async fetchByEmail(email: string): Promise<User> {
