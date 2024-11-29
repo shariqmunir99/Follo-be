@@ -57,7 +57,7 @@ export class UserWorkflows {
     }
 
     return {
-      result: { ...user, ...stats },
+      result: { ...user.serialize(), ...stats },
     };
   }
 
