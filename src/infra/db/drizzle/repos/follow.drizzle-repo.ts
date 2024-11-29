@@ -4,7 +4,7 @@ import {
   Provider,
 } from '@nestjs/common';
 import { DrizzleDB, InjectDb } from '../db-connection';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gt } from 'drizzle-orm';
 import { FavoritedByNotFound } from 'src/domain/entities/favorited-by/favorited-by.errors';
 import { FollowRepository } from 'src/domain/entities/follow/follow.repository';
 import {
@@ -93,6 +93,25 @@ class FollowDrizzleRepo extends FollowRepository {
         throw new FavoritedByNotFound(userId, 'userId');
       }
       return following; //Returns the list of all the organizer ID's that are being by the user.
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getRecentFollowersCount(orgId: string) {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    try {
+      const followers = await this.db
+        .select()
+        .from(followTbl)
+        .where(
+          and(
+            gt(followTbl.createdAt, thirtyDaysAgo),
+            eq(followTbl.followingId, orgId),
+          ),
+        );
+      return followers.length;
     } catch (e) {
       throw new InternalServerErrorException();
     }

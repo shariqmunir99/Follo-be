@@ -8,4 +8,5 @@ export abstract class InterestedByRepository {
   abstract deleteByEventId(eventId: string);
   abstract fetchByEventId(id: string);
   abstract fetchByUserId(id: string): Promise<Event[]>;
+  abstract getRecentInteractionsCount(eventid: string);
 }

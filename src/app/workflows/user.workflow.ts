@@ -197,4 +197,56 @@ export class UserWorkflows {
       message: 'Resource deleted successfully.',
     };
   }
+
+  async sortEvents(topFiveEvents) {
+    let sortedFiveEvents = topFiveEvents.sort(
+      (a, b) => a.interactions - b.interactions,
+    );
+    sortedFiveEvents.reverse();
+
+    if (sortedFiveEvents.length > 5) {
+      sortedFiveEvents = sortedFiveEvents.slice(0, 5);
+    }
+    return sortedFiveEvents;
+  }
+
+  async getAllRecentlyInteractedEvents(events, org) {
+    let recentlyInteractedEvents = [];
+    let totalInteractions = 0;
+    for (let index in events) {
+      const eventId = events[index].id;
+      const recentInteractions =
+        await this.interestedByRepo.getRecentInteractionsCount(eventId);
+      totalInteractions += recentInteractions;
+
+      const entry = {
+        organizer: org.username,
+        ...events[index],
+        interactions: recentInteractions,
+      };
+      recentlyInteractedEvents.push(entry);
+    }
+    return recentlyInteractedEvents;
+  }
+
+  async organizerDashboard(org: User) {
+    const followersCount = await this.followRepo.getRecentFollowersCount(
+      org.id,
+    );
+
+    console.log(followersCount);
+    let totalInteractions = 0;
+
+    const events = await this.eventRepo.fetchByOrganizerId(org.id);
+    let recentlyInteractedEvents = await this.getAllRecentlyInteractedEvents(
+      events,
+      org,
+    );
+    recentlyInteractedEvents = await this.sortEvents(recentlyInteractedEvents);
+    return {
+      Followers: followersCount,
+      'Interactions-in-last-30-Days': totalInteractions,
+      'top-5-Events': recentlyInteractedEvents,
+    };
+  }
 }
