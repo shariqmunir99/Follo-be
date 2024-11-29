@@ -6,5 +6,4 @@ export abstract class EventRepository {
   abstract delete(id: string);
   abstract fetchById(id: Event['id'] | string): Promise<Event>;
   abstract fetchByOrganizerId(orgId: string);
-
 }

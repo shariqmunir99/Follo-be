@@ -5,5 +5,6 @@ export abstract class FavoritedByRepository {
   abstract fetchByEventId(id: string): Promise<{ username: string }[]>;
   abstract delete(userId: string, eventId: string);
   abstract deleteByEventId(eventId: string);
+  abstract deleteByUserId(userId: string);
   abstract fetchByUserId(id: string): Promise<SerializedFavoritedBy[]>;
 }

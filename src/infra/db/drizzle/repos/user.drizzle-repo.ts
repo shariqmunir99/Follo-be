@@ -49,6 +49,14 @@ class UserDrizzleRepo extends UserRepository {
     }
   }
 
+  async delete(id: string) {
+    try {
+      await this.db.delete(userTbl).where(eq(userTbl.id, id));
+    } catch {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async fetchById(id: string): Promise<User> {
     try {
       const user = await this.db

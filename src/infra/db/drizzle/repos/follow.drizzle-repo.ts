@@ -48,6 +48,26 @@ class FollowDrizzleRepo extends FollowRepository {
     }
   }
 
+  async deleteByFollowerId(userId: string) {
+    try {
+      await this.db.delete(followTbl).where(eq(followTbl.followerId, userId));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      throw new InternalServerErrorException(userId);
+    }
+  }
+
+  async deleteByFollowingId(organizerId: string) {
+    try {
+      await this.db
+        .delete(followTbl)
+        .where(eq(followTbl.followingId, organizerId));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      throw new InternalServerErrorException(organizerId);
+    }
+  }
+
   async fetchFollowers(organizerId: string): Promise<SerializedFollow[]> {
     try {
       const followers = await this.db

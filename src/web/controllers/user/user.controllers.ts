@@ -51,4 +51,9 @@ export class UserController {
   async fetchFavoritedEvents(@Req() req) {
     return await this.wfs.fetchFavoritedEvents(req.user);
   }
+
+  @Delete('/delete')
+  async deleteUser(@Req() req) {
+    return await this.wfs.deleteUser(req.user);
+  }
 }
