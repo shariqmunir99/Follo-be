@@ -64,6 +64,13 @@
       "when": 1731789096761,
       "tag": "0008_add-follow-tbl",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1732614659743,
+      "tag": "0009_add_location_to_user",
+      "breakpoints": true
     }
   ]
 }

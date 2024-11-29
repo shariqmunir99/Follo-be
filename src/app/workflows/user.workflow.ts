@@ -11,8 +11,10 @@ import { Follow } from 'src/domain/entities/follow/follow.entity';
 
 import { RoleRepository } from 'src/domain/entities/role/role.repository';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
+
 import { VerifyRequestRepository } from 'src/domain/entities/verify-requests/verify-request.repository';
 import { ResetRequestRepository } from 'src/domain/entities/reset-requests/reset-request.repository';
+
 
 @Injectable()
 export class UserWorkflows {
@@ -29,13 +31,14 @@ export class UserWorkflows {
   ) {}
 
   async editProfile(
-    { new_username, new_password }: EditProfileDto,
+    { new_username, new_password, new_location }: EditProfileDto,
     user: User,
   ) {
     const updatedUser = await this.userDomServ.editProfile(
       user,
       new_username,
       new_password,
+      new_location,
     );
 
     console.log('Here');
@@ -60,7 +63,7 @@ export class UserWorkflows {
     }
 
     return {
-      result: { ...user, ...stats },
+      result: { ...user.serialize(), ...stats },
     };
   }
 

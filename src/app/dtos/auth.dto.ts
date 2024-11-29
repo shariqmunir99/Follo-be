@@ -15,6 +15,9 @@ export class SignUpDto {
   email: string;
 
   @IsString()
+  location: string;
+
+  @IsString()
   @MinLength(6)
   @Matches(/^(?=.*[0-9])/, {
     message: 'Password must contain atleast one number',

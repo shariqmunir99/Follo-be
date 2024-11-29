@@ -12,6 +12,10 @@ export class EditProfileDto {
   @IsOptional()
   new_password: string;
 
+  @IsString()
+  @IsOptional()
+  new_location: string;
+
   @Validate(AtLeastOnePropertyConstraint)
   atLeastOneProperty: EditProfileDto;
 }

@@ -46,7 +46,7 @@ class DomainServicesModule {}
     DomainServicesModule,
     JwtModule.register({
       secret: process.env.TOKEN_SECRET, // This is your secret key to sign the token (keep it safe!)
-      signOptions: { expiresIn: process.env.TOKEN_EXPIRATION_SECONDS },
+      signOptions: { expiresIn: Number(process.env.TOKEN_EXPIRATION_SECONDS) },
     }),
   ],
   providers: [...WORKFLOWS, ...JWT],
