@@ -244,8 +244,8 @@ export class UserWorkflows {
     recentlyInteractedEvents = await this.sortEvents(recentlyInteractedEvents);
     return {
       Followers: followersCount,
-      'Interactions-in-last-30-Days': totalInteractions,
-      'top-5-Events': recentlyInteractedEvents,
+      Interactions: totalInteractions,
+      Events: recentlyInteractedEvents,
     };
   }
 }

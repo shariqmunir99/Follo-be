@@ -53,7 +53,7 @@ export class UserController {
   }
 
   @Roles(Role.Organizer)
-  @Get('/organizer-dashboard')
+  @Get('/dashboard')
   async organizerDashboard(@Req() req) {
     return await this.wfs.organizerDashboard(req.user);
   }
