@@ -7,4 +7,5 @@ export abstract class FollowRepository {
   abstract deleteByFollowingId(organizerId: string);
   abstract fetchFollowers(organizerID: string): Promise<SerializedFollow[]>;
   abstract fetchFollowing(userId: string): Promise<SerializedFollow[]>;
+  abstract getRecentFollowersCount(orgId: string);
 }

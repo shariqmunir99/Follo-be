@@ -4,7 +4,7 @@ import {
   Provider,
 } from '@nestjs/common';
 import { DrizzleDB, InjectDb } from '../db-connection';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gt } from 'drizzle-orm';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
 import { InterestedBy } from 'src/domain/entities/interested-by/interested-by.entity';
 import { interestedByTbl } from '../models/interested-by.model';
@@ -127,6 +127,25 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
       );
 
       return users; //Returns the list of all the user names that have interested the event.
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getRecentInteractionsCount(eventId: string) {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    try {
+      const Interactions = await this.db
+        .select()
+        .from(interestedByTbl)
+        .where(
+          and(
+            gt(interestedByTbl.createdAt, thirtyDaysAgo),
+            eq(interestedByTbl.eventId, eventId),
+          ),
+        );
+      return Interactions.length;
     } catch (e) {
       throw new InternalServerErrorException();
     }

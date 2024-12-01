@@ -52,6 +52,12 @@ export class UserController {
     return await this.wfs.fetchFavoritedEvents(req.user);
   }
 
+  @Roles(Role.Organizer)
+  @Get('/organizer-dashboard')
+  async organizerDashboard(@Req() req) {
+    return await this.wfs.organizerDashboard(req.user);
+  }
+
   @Delete('/delete')
   async deleteUser(@Req() req) {
     return await this.wfs.delete(req.user);
