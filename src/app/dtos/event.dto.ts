@@ -1,26 +1,39 @@
-import { IsDateString, IsOptional, IsString, Validate } from 'class-validator';
+import {
+  IsDateString,
+  IsOptional,
+  IsString,
+  MinLength,
+  Validate,
+} from 'class-validator';
 import { AtLeastOnePropertyConstraint } from '.';
 
 export class CreateEventDto {
   @IsString()
+  @MinLength(1)
   name: string;
 
   @IsString()
+  @MinLength(1)
   type: string;
 
   @IsString()
+  @MinLength(1)
   description: string;
 
   @IsDateString()
+  @MinLength(1)
   date: string;
 
   @IsString()
+  @MinLength(1)
   city: string;
 
   @IsString()
+  @MinLength(1)
   country: string;
 
   @IsString()
+  @MinLength(1)
   venue: string;
 }
 

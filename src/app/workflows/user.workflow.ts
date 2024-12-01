@@ -40,7 +40,7 @@ export class UserWorkflows {
       new_location,
     );
 
-    console.log('Here');
+    console.log('Inside');
     await this.userRepo.update(updatedUser);
 
     return {
