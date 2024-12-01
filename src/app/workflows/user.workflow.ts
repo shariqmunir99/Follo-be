@@ -226,7 +226,7 @@ export class UserWorkflows {
       };
       recentlyInteractedEvents.push(entry);
     }
-    return recentlyInteractedEvents;
+    return { recentlyInteractedEvents, totalInteractions };
   }
 
   async organizerDashboard(org: User) {
@@ -235,13 +235,12 @@ export class UserWorkflows {
     );
 
     console.log(followersCount);
-    let totalInteractions = 0;
 
     const events = await this.eventRepo.fetchByOrganizerId(org.id);
-    let recentlyInteractedEvents = await this.getAllRecentlyInteractedEvents(
-      events,
-      org,
-    );
+    let result = await this.getAllRecentlyInteractedEvents(events, org);
+    let recentlyInteractedEvents = result.recentlyInteractedEvents;
+    let totalInteractions = result.totalInteractions;
+
     recentlyInteractedEvents = await this.sortEvents(recentlyInteractedEvents);
     return {
       Followers: followersCount,
