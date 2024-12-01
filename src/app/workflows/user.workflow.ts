@@ -254,6 +254,7 @@ export class UserWorkflows {
 
   async verifyAccount({ baseUrl }: VerifyDto, user: User) {
     const verifyReq = VerifyRequest.new(user.id);
+    await this.verifyReqRepo.insert(verifyReq);
     await this.emailService.sendVerifyEmail({
       user_name: user.username,
       user_email: user.email,

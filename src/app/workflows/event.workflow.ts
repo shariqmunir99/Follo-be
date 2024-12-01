@@ -77,7 +77,7 @@ export class EventWorkflows {
   }
 
   async getEvent({ event_id }: GetEventDto) {
-    const event = await this.eventRepo.fetchById(event_id);
+    const event = (await this.eventRepo.fetchById(event_id)).serialize();
     const orgId = event.userId;
 
     const orgUsername = (await this.userRepo.fetchById(orgId)).username;

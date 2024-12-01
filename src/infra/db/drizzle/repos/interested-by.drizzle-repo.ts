@@ -121,7 +121,7 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
       const users = await Promise.all(
         interestedBy.map(async (row) => {
           const { username } = await this.userRepo.fetchById(row.userId);
-          const temp = { username };
+          const temp = { userId: row.userId, username };
           return temp;
         }),
       );

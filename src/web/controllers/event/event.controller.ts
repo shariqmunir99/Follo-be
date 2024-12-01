@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   CreateEventDto,
   DeleteEventDto,
@@ -33,7 +42,7 @@ export class EventController {
   }
 
   @Get('/details')
-  async getDetails(@Body() body: GetEventDto) {
+  async getDetails(@Query() body: GetEventDto) {
     return await this.wfs.getEvent(body);
   }
 
@@ -49,7 +58,7 @@ export class EventController {
   //Only an organizer can access this route.
   @Roles(Role.Organizer)
   @Get('/interested-by')
-  async fetchInterestedBy(@Body() body: InteractionDto, @Req() req) {
+  async fetchInterestedBy(@Query() body: InteractionDto, @Req() req) {
     return await this.wfs.fetchInterestedByListOfEvent(body, req.user);
   }
 
@@ -73,7 +82,7 @@ export class EventController {
   //Only an organizer can access this route.
   @Roles(Role.Organizer)
   @Get('/favorited-by')
-  async fetchFavoritedBy(@Body() body: InteractionDto) {
+  async fetchFavoritedBy(@Query() body: InteractionDto) {
     return await this.wfs.fetchFavoritedByListOfEvent(body);
   }
 
