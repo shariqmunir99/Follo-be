@@ -1,4 +1,4 @@
-import { IsOptional, IsString, Validate } from 'class-validator';
+import { IsOptional, IsString, IsUrl, Validate } from 'class-validator';
 import { AtLeastOnePropertyConstraint } from '.';
 
 // Custom validator to check if at least one property is present
@@ -23,4 +23,9 @@ export class EditProfileDto {
 export class FollowDto {
   @IsString()
   organizer_id: string;
+}
+
+export class VerifyDto {
+  @IsUrl()
+  baseUrl: string;
 }

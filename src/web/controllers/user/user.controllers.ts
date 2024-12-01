@@ -8,7 +8,7 @@ import {
   Put,
   Req,
 } from '@nestjs/common';
-import { EditProfileDto, FollowDto } from 'src/app/dtos/user.dto';
+import { EditProfileDto, FollowDto, VerifyDto } from 'src/app/dtos/user.dto';
 import { UserWorkflows } from 'src/app/workflows/user.workflow';
 import { Role } from 'src/domain/enum';
 import { Roles } from 'src/web/filters/Decorators/roles.decorator';
@@ -61,5 +61,10 @@ export class UserController {
   @Delete('/delete')
   async deleteUser(@Req() req) {
     return await this.wfs.delete(req.user);
+  }
+
+  @Post('/verify')
+  async verifyAccount(@Body() body: VerifyDto, @Req() req) {
+    return await this.wfs.verifyAccount(body, req.user);
   }
 }

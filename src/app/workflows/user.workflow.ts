@@ -3,7 +3,7 @@ import { FavoritedByRepository } from 'src/domain/entities/favorited-by/favorite
 import { FollowRepository } from 'src/domain/entities/follow/follow.repository';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
-import { EditProfileDto, FollowDto } from '../dtos/user.dto';
+import { EditProfileDto, FollowDto, VerifyDto } from '../dtos/user.dto';
 import { UserDomainService } from 'src/domain/services/user.domain-service';
 import { User } from 'src/domain/entities/user/user.entity';
 
@@ -14,6 +14,8 @@ import { EventRepository } from 'src/domain/entities/event/event.repository';
 
 import { VerifyRequestRepository } from 'src/domain/entities/verify-requests/verify-request.repository';
 import { ResetRequestRepository } from 'src/domain/entities/reset-requests/reset-request.repository';
+import { MailService } from '../services/auth-services/email.service';
+import { VerifyRequest } from 'src/domain/entities/verify-requests/verify-request.entity';
 
 @Injectable()
 export class UserWorkflows {
@@ -27,6 +29,7 @@ export class UserWorkflows {
     private readonly verifyReqRepo: VerifyRequestRepository,
     private readonly resetReqRepo: ResetRequestRepository,
     private readonly userDomServ: UserDomainService,
+    private readonly emailService: MailService,
   ) {}
 
   async editProfile(
@@ -246,6 +249,20 @@ export class UserWorkflows {
       Followers: followersCount,
       Interactions: totalInteractions,
       Events: recentlyInteractedEvents,
+    };
+  }
+
+  async verifyAccount({ baseUrl }: VerifyDto, user: User) {
+    const verifyReq = VerifyRequest.new(user.id);
+    await this.emailService.sendVerifyEmail({
+      user_name: user.username,
+      user_email: user.email,
+      href: baseUrl + '/' + verifyReq.id,
+    });
+
+    console.log(baseUrl + '/' + verifyReq.id);
+    return {
+      message: 'success',
     };
   }
 }
