@@ -3,11 +3,17 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
+  ParseFilePipeBuilder,
   Post,
   Put,
   Query,
   Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { GoogleDriveService } from 'nestjs-googledrive-upload';
 import {
   CreateEventDto,
   DeleteEventDto,
@@ -15,18 +21,66 @@ import {
   GetEventDto,
   InteractionDto,
 } from 'src/app/dtos/event.dto';
+import { CustomUploadFileTypeValidator } from 'src/app/validators/file.valdator';
 import { EventWorkflows } from 'src/app/workflows/event.workflow';
 import { Role } from 'src/domain/enum';
+import { Public } from 'src/web/filters/Decorators/public.decorator';
 import { Roles } from 'src/web/filters/Decorators/roles.decorator';
+
+const MAX_PROFILE_PICTURE_SIZE_IN_BYTES = 2 * 1024 * 1024;
+const VALID_UPLOADS_MIME_TYPES = ['image/jpeg', 'image/png'];
 
 @Controller('api/event')
 export class EventController {
-  constructor(private readonly wfs: EventWorkflows) {}
+  constructor(
+    private readonly wfs: EventWorkflows,
+    private readonly googleDriveService: GoogleDriveService,
+  ) {}
+
+  @Public()
+  @Post()
+  @UseInterceptors(FileInterceptor('file'))
+  async test(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addValidator(
+          new CustomUploadFileTypeValidator({
+            fileType: VALID_UPLOADS_MIME_TYPES,
+          }),
+        )
+        .addMaxSizeValidator({ maxSize: MAX_PROFILE_PICTURE_SIZE_IN_BYTES })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    )
+    file,
+    @Body() Body: CreateEventDto,
+  ) {
+    try {
+      // do something with the link, e.g., save it to the database
+      return { Body, file };
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 
   @Roles(Role.Organizer)
+  @UseInterceptors(FileInterceptor('file'))
   @Post('/upload')
-  async create(@Body() body: CreateEventDto, @Req() req) {
-    return await this.wfs.createEvent(body, req.user);
+  async create(
+    @Body() body: CreateEventDto,
+    @Req() req,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addValidator(
+          new CustomUploadFileTypeValidator({
+            fileType: VALID_UPLOADS_MIME_TYPES,
+          }),
+        )
+        .addMaxSizeValidator({ maxSize: MAX_PROFILE_PICTURE_SIZE_IN_BYTES })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    )
+    file,
+  ) {
+    return await this.wfs.createEvent(body, req.user, file);
   }
 
   @Roles(Role.Organizer)

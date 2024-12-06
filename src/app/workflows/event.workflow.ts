@@ -16,6 +16,8 @@ import {
 } from '../dtos/event.dto';
 import { EventDomainService } from 'src/domain/services/event.domain-service';
 import { UserDomainService } from 'src/domain/services/user.domain-service';
+import { GoogleDriveService } from 'nestjs-googledrive-upload';
+import { link } from 'fs';
 
 @Injectable()
 export class EventWorkflows {
@@ -26,12 +28,21 @@ export class EventWorkflows {
     private readonly favoritedByRepo: FavoritedByRepository,
     private readonly eventDomServ: EventDomainService,
     private readonly userDomServ: UserDomainService,
+    private readonly googleDriveService: GoogleDriveService,
   ) {}
 
   async createEvent(
     { name, type, description, date, city, country, venue }: CreateEventDto,
     user: User,
+    file: Express.Multer.File,
   ) {
+    let link =
+      'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg';
+    try {
+      link = await this.googleDriveService.uploadImage(file);
+    } catch (e) {
+      throw new Error(e);
+    }
     this.userDomServ.isVerified(user);
     const newEvent = Event.new(
       name,
@@ -41,6 +52,7 @@ export class EventWorkflows {
       city,
       country,
       venue,
+      link,
       user.id,
     );
     const result = await this.eventRepo.insert(newEvent);

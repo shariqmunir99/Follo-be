@@ -39,6 +39,7 @@ export class CreateEventDto {
 
 export class EditEventDto {
   @IsString()
+  @MinLength(1)
   event_id: string;
 
   @IsString()

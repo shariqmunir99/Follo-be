@@ -14,6 +14,7 @@ export interface IEvent extends IEntity {
   country: string;
   venue: string;
   userId: string;
+  imageUrl: string;
 }
 export type SerializedEvent = SimpleSerialized<IEvent>;
 type EventUpdateData = Omitt<IEvent, 'id' | 'createdAt' | 'userId'>;
@@ -26,6 +27,8 @@ export class Event extends BaseEntity implements IEvent {
   city: string;
   country: string;
   venue: string;
+  imageUrl: string;
+
   private constructor(
     name: string,
     type: string,
@@ -34,6 +37,7 @@ export class Event extends BaseEntity implements IEvent {
     city: string,
     country: string,
     venue: string,
+    imageUrl: string,
     readonly userId: string,
   ) {
     super();
@@ -44,6 +48,7 @@ export class Event extends BaseEntity implements IEvent {
     this.city = city;
     this.country = country;
     this.venue = venue;
+    this.imageUrl = imageUrl;
   }
 
   static new(
@@ -54,6 +59,7 @@ export class Event extends BaseEntity implements IEvent {
     city: string,
     country: string,
     venue: string,
+    imageUrl: string,
     userId,
   ) {
     return new Event(
@@ -64,6 +70,7 @@ export class Event extends BaseEntity implements IEvent {
       city,
       country,
       venue,
+      imageUrl,
       userId,
     );
   }
@@ -97,6 +104,11 @@ export class Event extends BaseEntity implements IEvent {
     this.markUpdated();
   }
 
+  imageUpdate(newImageUrl: string) {
+    this.imageUrl = newImageUrl;
+    this.markUpdated();
+  }
+
   forUpdate(): EventUpdateData {
     return {
       ...super.forUpdate(),
@@ -107,6 +119,7 @@ export class Event extends BaseEntity implements IEvent {
       city: this.city,
       country: this.country,
       venue: this.venue,
+      imageUrl: this.imageUrl,
     };
   }
 
@@ -120,6 +133,7 @@ export class Event extends BaseEntity implements IEvent {
       other.country,
       other.venue,
       other.userId,
+      other.imageUrl,
     );
     ent._fromSerialized(other);
 
@@ -136,6 +150,7 @@ export class Event extends BaseEntity implements IEvent {
       country: this.country,
       venue: this.venue,
       userId: this.userId,
+      imageUrl: this.imageUrl,
     };
   }
 }
