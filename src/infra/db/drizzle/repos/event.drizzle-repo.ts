@@ -6,7 +6,7 @@ import {
 import { DrizzleDB, InjectDb } from '../db-connection';
 import { eq } from 'drizzle-orm';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
-import { Event } from 'src/domain/entities/event/event.entity';
+import { Event, SerializedEvent } from 'src/domain/entities/event/event.entity';
 import { eventTbl } from '../models/event.model';
 import { EventNotFound } from 'src/domain/entities/event/event.errors';
 
@@ -37,12 +37,12 @@ class EventDrizzleRepo extends EventRepository {
     }
   }
 
-  async insert(entity: Event): Promise<Event> {
+  async insert(entity: Event): Promise<SerializedEvent> {
     try {
       const data = entity.serialize();
       await this.db.insert(eventTbl).values(data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      return entity; // Return the Event as is in case of successful insertion but make sure to not return the password hash due to security concerns .
+      return data; // Return the Event as is in case of successful insertion but make sure to not return the password hash due to security concerns .
     } catch (e) {
       console.log(e.message);
       throw new InternalServerErrorException();
