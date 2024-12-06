@@ -3,7 +3,7 @@ import { InvalidCredentials } from 'src/domain/entities/user/user.errors';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserRepository } from 'src/domain/entities/user/user.repository';
-import { User } from 'src/domain/entities/user/user.entity';
+import { defaultProfilePic, User } from 'src/domain/entities/user/user.entity';
 import ArgonPwHasher from 'src/app/services/auth-services/pwHasher.service';
 import {
   ForgotPasswordDto,
@@ -88,7 +88,14 @@ export class AuthWorkflows {
       role = await this.roleRepo.fetchByRole('Organizer');
     } else role = await this.roleRepo.fetchByRole('User');
 
-    const user = User.new(username, email, hashed_password, role.id, location);
+    const user = User.new(
+      username,
+      email,
+      hashed_password,
+      role.id,
+      location,
+      defaultProfilePic,
+    );
     const verify_request = VerifyRequest.new(user.id);
 
     await this.userRepo.insert(user);

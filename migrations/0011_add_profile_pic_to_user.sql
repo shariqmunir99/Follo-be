@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "profilePicUrl" text DEFAULT 'https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg';
