@@ -70,6 +70,10 @@ export class EditEventDto {
   @IsOptional()
   venue: string;
 
+  @IsString()
+  @IsOptional()
+  image: boolean;
+
   @Validate(AtLeastOnePropertyConstraint)
   atLeastOneProperty: EditEventDto;
 }

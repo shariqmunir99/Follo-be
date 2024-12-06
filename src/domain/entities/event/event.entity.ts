@@ -132,8 +132,8 @@ export class Event extends BaseEntity implements IEvent {
       other.city,
       other.country,
       other.venue,
-      other.userId,
       other.imageUrl,
+      other.userId,
     );
     ent._fromSerialized(other);
 

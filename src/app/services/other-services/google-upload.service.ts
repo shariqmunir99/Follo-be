@@ -53,7 +53,7 @@ export class GoogleDriveUploadService implements UploadService {
         fields: 'id',
       });
 
-      return response.data.id;
+      return `https://drive.google.com/thumbnail?id=${response.data.id}`;
     } catch (e) {
       throw new Error(e);
     }

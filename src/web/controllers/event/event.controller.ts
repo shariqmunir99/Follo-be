@@ -13,7 +13,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { GoogleDriveService } from 'nestjs-googledrive-upload';
 import {
   CreateEventDto,
   DeleteEventDto,
@@ -56,9 +55,23 @@ export class EventController {
   }
 
   @Roles(Role.Organizer)
+  @UseInterceptors(FileInterceptor('file'))
   @Put('/edit')
-  async edit(@Body() body: EditEventDto) {
-    return await this.wfs.editEvent(body);
+  async edit(
+    @Body() body: EditEventDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addValidator(
+          new CustomUploadFileTypeValidator({
+            fileType: VALID_UPLOADS_MIME_TYPES,
+          }),
+        )
+        .addMaxSizeValidator({ maxSize: MAX_PROFILE_PICTURE_SIZE_IN_BYTES })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    )
+    file,
+  ) {
+    return await this.wfs.editEvent(body, file);
   }
 
   @Roles(Role.Organizer)

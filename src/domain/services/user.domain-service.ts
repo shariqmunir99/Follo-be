@@ -55,9 +55,10 @@ export class UserDomainService {
     if (file && newProfilePic) {
       try {
         if (user.profilePicUrl !== defaultProfilePic) {
-          await this.googleDriveServ.deleteImage(user.profilePicUrl);
+          await this.googleDriveServ.deleteImage(
+            user.profilePicUrl.split('?id=')[1],
+          );
         }
-        console.log('Updating profile pic');
         const picId = await this.googleDriveServ.uploadImage(file);
         user.profilePicUpdate(picId);
       } catch (e) {

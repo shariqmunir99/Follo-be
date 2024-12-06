@@ -51,7 +51,6 @@ export class UserWorkflows {
       file,
     );
 
-    console.log('Inside');
     await this.userRepo.update(updatedUser);
 
     return {

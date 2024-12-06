@@ -36,14 +36,8 @@ export class EventWorkflows {
     user: User,
     file: Express.Multer.File,
   ) {
-    let link =
-      'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg';
-    try {
-      link = await this.googleDriveService.uploadImage(file);
-    } catch (e) {
-      throw new Error(e);
-    }
     this.userDomServ.isVerified(user);
+    const link = await this.googleDriveService.uploadImage(file);
     const newEvent = Event.new(
       name,
       type,
@@ -59,17 +53,23 @@ export class EventWorkflows {
     return { result };
   }
 
-  async editEvent({
-    event_id,
-    name,
-    type,
-    description,
-    date,
-    city,
-    country,
-    venue,
-  }: EditEventDto) {
+  async editEvent(
+    {
+      event_id,
+      name,
+      type,
+      description,
+      date,
+      city,
+      country,
+      venue,
+      image,
+    }: EditEventDto,
+    file: Express.Multer.File,
+  ) {
     let event = await this.eventRepo.fetchById(event_id);
+
+    console.log('EVEL', event);
 
     const updatedEvent = await this.eventDomServ.editEvent(
       name,
@@ -80,6 +80,8 @@ export class EventWorkflows {
       country,
       venue,
       event,
+      image,
+      file,
     );
 
     await this.eventRepo.update(updatedEvent); //updating data base
