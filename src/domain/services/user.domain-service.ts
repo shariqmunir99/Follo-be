@@ -1,16 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '../entities/user/user.entity';
+import { defaultProfilePic, User } from '../entities/user/user.entity';
 import { UnverifiedUser } from '../entities/user/user.errors';
 import ArgonPwHasher from 'src/app/services/auth-services/pwHasher.service';
+import { GoogleDriveUploadService } from 'src/app/services/other-services/google-upload.service';
 
 @Injectable()
 export class UserDomainService {
-  constructor(private readonly pwHasher: ArgonPwHasher) {}
+  constructor(
+    private readonly pwHasher: ArgonPwHasher,
+    private readonly googleDriveServ: GoogleDriveUploadService,
+  ) {}
+
+  isVerified(user: User) {
+    if (user.isVerified) {
+      return;
+    }
+    throw new UnverifiedUser();
+  }
+
+  isNewProfilePic(user: User) {
+    if (user.profilePicUrl !== defaultProfilePic) return true;
+    return false;
+  }
+
+  extractPicId(link: string) {
+    return link.split('?id=')[-1];
+  }
+
   async editProfile(
     user: User,
     newUsername: string | null,
     newPassword: string | null,
     newLocation: string | null,
+    newProfilePic: boolean | null,
+    file: Express.Multer.File | null,
   ) {
     const isVerified = user.isVerified;
 
@@ -29,13 +52,19 @@ export class UserDomainService {
       user.locationUpdate(newLocation);
     }
 
-    return user;
-  }
-
-  isVerified(user: User) {
-    if (user.isVerified) {
-      return;
+    if (file && newProfilePic) {
+      try {
+        if (user.profilePicUrl !== defaultProfilePic) {
+          await this.googleDriveServ.deleteImage(user.profilePicUrl);
+        }
+        console.log('Updating profile pic');
+        const picId = await this.googleDriveServ.uploadImage(file);
+        user.profilePicUpdate(picId);
+      } catch (e) {
+        console.log(e);
+      }
     }
-    throw new UnverifiedUser();
+
+    return user;
   }
 }

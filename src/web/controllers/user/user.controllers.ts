@@ -3,12 +3,22 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Injectable,
+  ParseFilePipeBuilder,
   Post,
   Put,
   Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { EditProfileDto, FollowDto, VerifyDto } from 'src/app/dtos/user.dto';
+import {
+  CustomUploadFileTypeValidator,
+  MAX_PROFILE_PICTURE_SIZE_IN_BYTES,
+  VALID_UPLOADS_MIME_TYPES,
+} from 'src/app/validators/file.valdator';
 import { UserWorkflows } from 'src/app/workflows/user.workflow';
 import { Role } from 'src/domain/enum';
 import { Roles } from 'src/web/filters/Decorators/roles.decorator';
@@ -19,8 +29,23 @@ export class UserController {
   constructor(private readonly wfs: UserWorkflows) {}
 
   @Put('/edit')
-  async editProfile(@Body() body: EditProfileDto, @Req() req) {
-    return await this.wfs.editProfile(body, req.user);
+  @UseInterceptors(FileInterceptor('file'))
+  async editProfile(
+    @Body() body: EditProfileDto,
+    @Req() req,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addValidator(
+          new CustomUploadFileTypeValidator({
+            fileType: VALID_UPLOADS_MIME_TYPES,
+          }),
+        )
+        .addMaxSizeValidator({ maxSize: MAX_PROFILE_PICTURE_SIZE_IN_BYTES })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    )
+    file,
+  ) {
+    return await this.wfs.editProfile(body, req.user, file);
   }
 
   @Get('/details')

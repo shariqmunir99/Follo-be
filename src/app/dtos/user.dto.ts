@@ -16,6 +16,10 @@ export class EditProfileDto {
   @IsOptional()
   new_location: string;
 
+  @IsString()
+  @IsOptional()
+  new_profile_pic: boolean;
+
   @Validate(AtLeastOnePropertyConstraint)
   atLeastOneProperty: EditProfileDto;
 }

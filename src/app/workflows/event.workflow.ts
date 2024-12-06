@@ -16,8 +16,8 @@ import {
 } from '../dtos/event.dto';
 import { EventDomainService } from 'src/domain/services/event.domain-service';
 import { UserDomainService } from 'src/domain/services/user.domain-service';
-import { GoogleDriveService } from 'nestjs-googledrive-upload';
-import { link } from 'fs';
+
+import { GoogleDriveUploadService } from '../services/other-services/google-upload.service';
 
 @Injectable()
 export class EventWorkflows {
@@ -28,7 +28,7 @@ export class EventWorkflows {
     private readonly favoritedByRepo: FavoritedByRepository,
     private readonly eventDomServ: EventDomainService,
     private readonly userDomServ: UserDomainService,
-    private readonly googleDriveService: GoogleDriveService,
+    private readonly googleDriveService: GoogleDriveUploadService,
   ) {}
 
   async createEvent(

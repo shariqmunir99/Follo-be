@@ -33,14 +33,22 @@ export class UserWorkflows {
   ) {}
 
   async editProfile(
-    { new_username, new_password, new_location }: EditProfileDto,
+    {
+      new_username,
+      new_password,
+      new_location,
+      new_profile_pic,
+    }: EditProfileDto,
     user: User,
+    file: Express.Multer.File,
   ) {
     const updatedUser = await this.userDomServ.editProfile(
       user,
       new_username,
       new_password,
       new_location,
+      new_profile_pic,
+      file,
     );
 
     console.log('Inside');

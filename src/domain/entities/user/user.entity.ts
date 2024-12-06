@@ -95,7 +95,7 @@ export class User extends BaseEntity implements IUser {
     this.markUpdated;
   }
   profilePicUpdate(newProfilePic: string) {
-    this.pwHashed = newProfilePic;
+    this.profilePicUrl = newProfilePic;
     this.markUpdated;
   }
   static fromSerialized(other: SerializedUser) {
