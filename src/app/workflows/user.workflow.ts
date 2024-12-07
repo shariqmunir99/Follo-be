@@ -6,7 +6,7 @@ import { UserRepository } from 'src/domain/entities/user/user.repository';
 import {
   EditProfileDto,
   FollowDto,
-  MyEventDto,
+  PaginationParamDto,
   VerifyDto,
 } from '../dtos/user.dto';
 import { UserDomainService } from 'src/domain/services/user.domain-service';
@@ -63,7 +63,7 @@ export class UserWorkflows {
     };
   }
 
-  async getEvents({ page, limit }: MyEventDto, user: User) {
+  async getEvents({ page, limit }: PaginationParamDto, user: User) {
     const events = await this.eventRepo.fetchPaginatedByOrgId(
       user.id,
       (page - 1) * limit,
@@ -162,8 +162,12 @@ export class UserWorkflows {
     return { message: 'Resource deleted successfully' };
   }
 
-  async fetchInterestedEvents(user: User) {
-    const result = await this.interestedByRepo.fetchByUserId(user.id);
+  async fetchInterestedEvents({ page, limit }, user: User) {
+    const result = await this.interestedByRepo.fetchPaginatedByUserId(
+      user.id,
+      (page - 1) * limit,
+      limit,
+    );
     return { result: result };
   }
 

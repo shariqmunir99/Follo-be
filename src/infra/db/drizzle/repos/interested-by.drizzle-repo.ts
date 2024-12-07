@@ -108,6 +108,35 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async fetchPaginatedByUserId(
+    id: string,
+    offset: number,
+    limit: number,
+  ): Promise<Event[]> {
+    // Fetching the events the user is interested in
+    const interestedBy = await this.db
+      .select()
+      .from(interestedByTbl)
+      .where(eq(interestedByTbl.userId, id))
+      .limit(limit)
+      .offset(offset);
+
+    // Check if the user is not interested in any events
+    if (interestedBy.length === 0) {
+      throw new InterestedByNotFound(id, 'userId');
+    }
+
+    // Fetch event names in parallel for all interested events
+    const events = await Promise.all(
+      interestedBy.map(
+        async (row) => await this.eventRepo.fetchById(row.eventId), // Make sure to use `eventId`
+      ),
+    );
+    // Return the list of event names
+    return events;
+  }
+
   async fetchByEventId(id: string) {
     try {
       const interestedBy = await this.db

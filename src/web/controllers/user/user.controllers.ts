@@ -18,7 +18,7 @@ import { query } from 'express';
 import {
   EditProfileDto,
   FollowDto,
-  MyEventDto,
+  PaginationParamDto,
   VerifyDto,
 } from 'src/app/dtos/user.dto';
 import {
@@ -27,7 +27,6 @@ import {
   VALID_UPLOADS_MIME_TYPES,
 } from 'src/app/validators/file.valdator';
 import { UserWorkflows } from 'src/app/workflows/user.workflow';
-import { User } from 'src/domain/entities/user/user.entity';
 import { Role } from 'src/domain/enum';
 import { Roles } from 'src/web/filters/Decorators/roles.decorator';
 
@@ -75,8 +74,8 @@ export class UserController {
 
   @Roles(Role.User)
   @Get('/interested-events')
-  async fetchInterestedEvents(@Req() req) {
-    return await this.wfs.fetchInterestedEvents(req.user);
+  async fetchInterestedEvents(@Req() req, @Query() query: PaginationParamDto) {
+    return await this.wfs.fetchInterestedEvents(query, req.user);
   }
 
   @Roles(Role.User)
@@ -93,7 +92,7 @@ export class UserController {
 
   @Roles(Role.Organizer)
   @Get('/my-events')
-  async getMyEvents(@Query() query: MyEventDto, @Req() req) {
+  async getMyEvents(@Query() query: PaginationParamDto, @Req() req) {
     return await this.wfs.getEvents(query, req.user);
   }
 

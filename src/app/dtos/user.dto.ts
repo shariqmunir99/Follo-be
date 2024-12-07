@@ -40,17 +40,17 @@ export class FollowDto {
   organizer_id: string;
 }
 
-export class MyEventDto {
+export class PaginationParamDto {
   @Type(() => Number) // Ensures transformation from string to number
   @IsInt({ message: 'Page must be an integer' })
   @Min(1, { message: 'Page must be at least 1' })
-  page: number = 1; // Default value is 1
+  page: number;
 
   @Type(() => Number) // Ensures transformation from string to number
   @IsInt({ message: 'Limit must be an integer' })
   @IsPositive({ message: 'Limit must be a positive number' })
   @Max(5, { message: 'Limit cannot exceed 5' })
-  limit: number = 5; // Default value is 5
+  limit: number;
 }
 
 export class VerifyDto {
