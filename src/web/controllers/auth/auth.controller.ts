@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, Post, Put } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
+import { query } from 'express';
 import {
   ForgotPasswordDto,
   LoginDto,
@@ -13,6 +23,11 @@ import { Public } from 'src/web/filters/Decorators/public.decorator';
 @Controller('api/auth')
 export class AuthController {
   constructor(private readonly wfs: AuthWorkflows) {}
+
+  @Get()
+  async test(@Query() query) {
+    return this.wfs.test(query);
+  }
 
   @Post('/login')
   @HttpCode(200)

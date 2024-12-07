@@ -8,18 +8,26 @@ import {
   ParseFilePipeBuilder,
   Post,
   Put,
+  Query,
   Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { EditProfileDto, FollowDto, VerifyDto } from 'src/app/dtos/user.dto';
+import { query } from 'express';
+import {
+  EditProfileDto,
+  FollowDto,
+  MyEventDto,
+  VerifyDto,
+} from 'src/app/dtos/user.dto';
 import {
   CustomUploadFileTypeValidator,
   MAX_PROFILE_PICTURE_SIZE_IN_BYTES,
   VALID_UPLOADS_MIME_TYPES,
 } from 'src/app/validators/file.valdator';
 import { UserWorkflows } from 'src/app/workflows/user.workflow';
+import { User } from 'src/domain/entities/user/user.entity';
 import { Role } from 'src/domain/enum';
 import { Roles } from 'src/web/filters/Decorators/roles.decorator';
 
@@ -81,6 +89,12 @@ export class UserController {
   @Get('/dashboard')
   async organizerDashboard(@Req() req) {
     return await this.wfs.organizerDashboard(req.user);
+  }
+
+  @Roles(Role.Organizer)
+  @Get('/my-events')
+  async getMyEvents(@Query() query: MyEventDto, @Req() req) {
+    return await this.wfs.getEvents(query, req.user);
   }
 
   @Delete('/delete')

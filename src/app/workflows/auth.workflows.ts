@@ -20,6 +20,7 @@ import { MailService } from '../services/auth-services/email.service';
 import { RoleRepository } from 'src/domain/entities/role/role.repository';
 import { Role } from 'src/domain/entities/role/role.entity';
 import { AuthDomainService } from 'src/domain/services/auth.domain-service';
+import { EventRepository } from 'src/domain/entities/event/event.repository';
 
 @Injectable()
 export class AuthWorkflows {
@@ -32,6 +33,7 @@ export class AuthWorkflows {
     private readonly emailService: MailService,
     private readonly roleRepo: RoleRepository,
     private readonly authDomServ: AuthDomainService,
+    private readonly eventRepo: EventRepository,
   ) {}
 
   async demoSignIn() {
@@ -44,6 +46,17 @@ export class AuthWorkflows {
       organizer: res1,
       user: res2,
     };
+  }
+
+  async test(query) {
+    const { page, limit, organizerId } = query;
+    console.log(Number(limit));
+    console.log((page - 1) * limit);
+    return this.eventRepo.fetchPaginatedByOrgId(
+      organizerId,
+      (page - 1) * limit,
+      Number(limit),
+    );
   }
   async login(credentials: LoginDto) {
     //Get user from database

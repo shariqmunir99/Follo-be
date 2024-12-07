@@ -3,7 +3,12 @@ import { FavoritedByRepository } from 'src/domain/entities/favorited-by/favorite
 import { FollowRepository } from 'src/domain/entities/follow/follow.repository';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
-import { EditProfileDto, FollowDto, VerifyDto } from '../dtos/user.dto';
+import {
+  EditProfileDto,
+  FollowDto,
+  MyEventDto,
+  VerifyDto,
+} from '../dtos/user.dto';
 import { UserDomainService } from 'src/domain/services/user.domain-service';
 import { User } from 'src/domain/entities/user/user.entity';
 
@@ -56,6 +61,22 @@ export class UserWorkflows {
     return {
       message: 'Resource Updated Successfully',
     };
+  }
+
+  async getEvents({ page, limit }: MyEventDto, user: User) {
+    const events = await this.eventRepo.fetchPaginatedByOrgId(
+      user.id,
+      (page - 1) * limit,
+      limit,
+    );
+    const results = await Promise.all(
+      events.map(async (event) => {
+        const stats = await this.getEventStats(event.id);
+        return { ...event, ...stats };
+      }),
+    );
+
+    return results;
   }
 
   async getProfile(user: User) {

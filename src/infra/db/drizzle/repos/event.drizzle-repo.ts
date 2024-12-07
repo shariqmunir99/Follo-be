@@ -78,6 +78,23 @@ class EventDrizzleRepo extends EventRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async fetchPaginatedByOrgId(orgId: string, offset: number, limit: number) {
+    try {
+      const event = await this.db
+        .select()
+        .from(eventTbl)
+        .where(eq(eventTbl.userId, orgId))
+        .limit(limit)
+        .offset(offset);
+      if (!event) {
+        throw new EventNotFound(orgId);
+      }
+      return event; // returns the list of all events created by an organizer
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
 }
 
 export const EventRepoProvider: Provider<EventRepository> = {
