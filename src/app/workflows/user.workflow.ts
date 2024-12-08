@@ -47,6 +47,7 @@ export class UserWorkflows {
     user: User,
     file: Express.Multer.File,
   ) {
+    console.log('File: ', file);
     const updatedUser = await this.userDomServ.editProfile(
       user,
       new_username,
@@ -69,14 +70,24 @@ export class UserWorkflows {
       (page - 1) * limit,
       limit,
     );
+    const { profilePicUrl, username } = await this.userRepo.fetchById(
+      events[0].userId,
+    );
     const results = await Promise.all(
       events.map(async (event) => {
         const stats = await this.getEventStats(event.id);
-        return { ...event, ...stats };
+        return {
+          ...{
+            ...event,
+            organizer: username,
+            profilePic: profilePicUrl,
+            ...stats,
+          },
+        };
       }),
     );
 
-    return results;
+    return { data: results, currentPage: page };
   }
 
   async getProfile(user: User) {
@@ -92,6 +103,7 @@ export class UserWorkflows {
       stats = await this.getOrganizerStats(user.id);
     }
 
+    console.log({ ...user.serialize(), ...stats });
     return {
       result: { ...user.serialize(), ...stats },
     };
@@ -135,9 +147,11 @@ export class UserWorkflows {
   // calculate the stats of a user
   async getUserStats(userId: string) {
     const favorites = await this.favoritedByRepo.fetchByUserId(userId);
+
     const favoriteCount = favorites.length;
 
     const interests = await this.interestedByRepo.fetchByUserId(userId);
+    console.log('Im here');
     const interestsCount = interests.length;
 
     const follow = await this.followRepo.fetchFollowing(userId);
@@ -268,8 +282,6 @@ export class UserWorkflows {
     const followersCount = await this.followRepo.getRecentFollowersCount(
       org.id,
     );
-
-    console.log(followersCount);
 
     const events = await this.eventRepo.fetchByOrganizerId(org.id);
     let result = await this.getAllRecentlyInteractedEvents(events, org);

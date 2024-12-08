@@ -89,9 +89,7 @@ class FollowDrizzleRepo extends FollowRepository {
         .select()
         .from(followTbl)
         .where(eq(followTbl.followerId, userId));
-      if (!following) {
-        throw new FavoritedByNotFound(userId, 'userId');
-      }
+
       return following; //Returns the list of all the organizer ID's that are being by the user.
     } catch (e) {
       throw new InternalServerErrorException();

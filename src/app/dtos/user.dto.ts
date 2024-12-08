@@ -47,10 +47,11 @@ export class PaginationParamDto {
   page: number;
 
   @Type(() => Number) // Ensures transformation from string to number
+  @IsOptional()
   @IsInt({ message: 'Limit must be an integer' })
   @IsPositive({ message: 'Limit must be a positive number' })
   @Max(5, { message: 'Limit cannot exceed 5' })
-  limit: number;
+  limit: number = 5;
 }
 
 export class VerifyDto {

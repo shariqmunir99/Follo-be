@@ -86,9 +86,7 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
         .select()
         .from(favoritedByTbl)
         .where(eq(favoritedByTbl.userId, id));
-      if (!favoritedBy) {
-        throw new FavoritedByNotFound(id, 'userId');
-      }
+
       return favoritedBy; //Returns the list of all the events ID's favorited by the user.
     } catch (e) {
       throw new InternalServerErrorException();
@@ -107,8 +105,14 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
 
       const users = await Promise.all(
         favoritedBy.map(async (row) => {
-          const { username } = await this.userRepo.fetchById(row.userId);
-          const temp = { username };
+          const { username, profilePicUrl } = await this.userRepo.fetchById(
+            row.userId,
+          );
+          const temp = {
+            userId: row.userId,
+            username,
+            profilePic: profilePicUrl,
+          };
           return temp;
         }),
       );

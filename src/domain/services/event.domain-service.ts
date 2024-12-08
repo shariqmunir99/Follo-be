@@ -42,7 +42,6 @@ export class EventDomainService {
 
     if (file && image) {
       try {
-        console.log('Pro', event.imageUrl, event.userId);
         await this.googleDriveServ.deleteImage(event.imageUrl.split('?id=')[1]);
         const picId = await this.googleDriveServ.uploadImage(file);
         event.imageUpdate(picId);

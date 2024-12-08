@@ -29,6 +29,7 @@ import {
 import { UserWorkflows } from 'src/app/workflows/user.workflow';
 import { Role } from 'src/domain/enum';
 import { Roles } from 'src/web/filters/Decorators/roles.decorator';
+import { OptionalFileValidationPipe } from 'src/web/filters/Pipes/file.pipes';
 
 @Injectable()
 @Controller('api/user')
@@ -41,16 +42,17 @@ export class UserController {
     @Body() body: EditProfileDto,
     @Req() req,
     @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addValidator(
-          new CustomUploadFileTypeValidator({
-            fileType: VALID_UPLOADS_MIME_TYPES,
-          }),
-        )
-        .addMaxSizeValidator({ maxSize: MAX_PROFILE_PICTURE_SIZE_IN_BYTES })
-        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+      new OptionalFileValidationPipe(
+        new ParseFilePipeBuilder()
+          .addValidator(
+            new CustomUploadFileTypeValidator({
+              fileType: VALID_UPLOADS_MIME_TYPES,
+            }),
+          )
+          .addMaxSizeValidator({ maxSize: MAX_PROFILE_PICTURE_SIZE_IN_BYTES }),
+      ),
     )
-    file,
+    file: Express.Multer.File | undefined,
   ) {
     return await this.wfs.editProfile(body, req.user, file);
   }

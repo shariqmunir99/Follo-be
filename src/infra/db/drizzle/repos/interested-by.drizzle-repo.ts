@@ -89,11 +89,6 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
         .from(interestedByTbl)
         .where(eq(interestedByTbl.userId, id));
 
-      // Check if the user is not interested in any events
-      if (interestedBy.length === 0) {
-        throw new InterestedByNotFound(id, 'userId');
-      }
-
       // Fetch event names in parallel for all interested events
       const events = await Promise.all(
         interestedBy.map(
@@ -149,8 +144,14 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
 
       const users = await Promise.all(
         interestedBy.map(async (row) => {
-          const { username } = await this.userRepo.fetchById(row.userId);
-          const temp = { userId: row.userId, username };
+          const { username, profilePicUrl } = await this.userRepo.fetchById(
+            row.userId,
+          );
+          const temp = {
+            userId: row.userId,
+            username,
+            profilePic: profilePicUrl,
+          };
           return temp;
         }),
       );

@@ -23,6 +23,11 @@ export class CustomUploadFileTypeValidator extends FileValidator {
     // try this line instead:
     // const response = fileType.parse(file.buffer);
     // <--Correction courtesy of Sven Stadhouders from the comments-->
+
+    if (!file) {
+      return true;
+    }
+
     const response = fileType.parse(file.buffer);
     return this._allowedMimeTypes.includes(response.mime);
   }

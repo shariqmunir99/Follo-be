@@ -37,6 +37,8 @@ export class EventWorkflows {
     file: Express.Multer.File,
   ) {
     this.userDomServ.isVerified(user);
+
+    console.log('File', file);
     const link = await this.googleDriveService.uploadImage(file);
     const newEvent = Event.new(
       name,
@@ -49,6 +51,7 @@ export class EventWorkflows {
       link,
       user.id,
     );
+
     const result = await this.eventRepo.insert(newEvent);
     return { result };
   }
@@ -69,8 +72,7 @@ export class EventWorkflows {
   ) {
     let event = await this.eventRepo.fetchById(event_id);
 
-    console.log('EVEL', event);
-
+    console.log('FIle:', file);
     const updatedEvent = await this.eventDomServ.editEvent(
       name,
       type,
@@ -85,6 +87,8 @@ export class EventWorkflows {
     );
 
     await this.eventRepo.update(updatedEvent); //updating data base
+    console.log('Updated', updatedEvent);
+
     return {
       message: 'Resource Updated Successfully',
     };
@@ -94,7 +98,7 @@ export class EventWorkflows {
     const event = (await this.eventRepo.fetchById(event_id)).serialize();
     const orgId = event.userId;
 
-    const orgUsername = (await this.userRepo.fetchById(orgId)).username;
+    const { profilePicUrl, username } = await this.userRepo.fetchById(orgId);
 
     const favouritedBy = await this.favoritedByRepo.fetchByEventId(event_id);
     const interestedBy = await this.interestedByRepo.fetchByEventId(event_id);
@@ -103,8 +107,19 @@ export class EventWorkflows {
       favourites: favouritedBy.length,
       interests: interestedBy.length,
     };
+    // console.log({
+    //   organizer: username,
+    //   profilePic: profilePicUrl,
+    //   ...event,
+    //   ...stats,
+    // });
     return {
-      result: { organizer: orgUsername, ...event, ...stats },
+      result: {
+        organizer: username,
+        profilePic: profilePicUrl,
+        ...event,
+        ...stats,
+      },
     };
   }
 
