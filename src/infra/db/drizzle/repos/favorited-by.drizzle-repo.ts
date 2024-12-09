@@ -16,12 +16,15 @@ import {
   FavoritedByNotFound,
 } from 'src/domain/entities/favorited-by/favorited-by.errors';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
+import { EventRepository } from 'src/domain/entities/event/event.repository';
+import { Event } from 'src/domain/entities/event/event.entity';
 
 @Injectable()
 class FavoritedByDrizzleRepo extends FavoritedByRepository {
   constructor(
     @InjectDb() private readonly db: DrizzleDB,
     private readonly userRepo: UserRepository,
+    private readonly eventRepo: EventRepository,
   ) {
     super();
   }
@@ -92,6 +95,30 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
       return favoritedBy; //Returns the list of all the events ID's favorited by the user.
     } catch (e) {
       throw new InternalServerErrorException();
+    }
+  }
+
+  async fetchPaginatedByUserId(id: string, offset: number, limit: number) {
+    try {
+      // Fetching the events the user is interested in
+      const interestedBy = await this.db
+        .select()
+        .from(favoritedByTbl)
+        .where(eq(favoritedByTbl.userId, id))
+        .limit(limit)
+        .offset(offset);
+
+      // Fetch event names in parallel for all interested events
+      const events = await Promise.all(
+        interestedBy.map(
+          async (row) =>
+            (await this.eventRepo.fetchById(row.eventId)).serialize(), // Make sure to use `eventId`
+        ),
+      );
+      // Return the list of event names
+      return events;
+    } catch (e) {
+      throw new InternalServerErrorException(e);
     }
   }
 

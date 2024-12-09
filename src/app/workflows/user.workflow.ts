@@ -81,6 +81,7 @@ export class UserWorkflows {
           ...{
             ...event,
             organizer: username,
+            organizer_id: event.userId,
             profilePic: profilePicUrl,
             ...stats,
           },
@@ -95,6 +96,14 @@ export class UserWorkflows {
     const following = await this.followRepo.fetchFollowing(user.id);
     const followedOrganizerIds = following.map((f) => f.followingId);
 
+    const interested = await this.interestedByRepo.fetchByUserId(user.id);
+    const interestedEventIds = interested.map((i) => i.eventId);
+
+    const favorited = await this.favoritedByRepo.fetchByUserId(user.id);
+    const favoritedEventIds = favorited.map((f) => f.eventId);
+
+    console.log(favoritedEventIds);
+
     const followedEvents = await this.eventRepo.fetchPaginatedByOrgId(
       followedOrganizerIds,
       0,
@@ -108,8 +117,6 @@ export class UserWorkflows {
       followedOrganizerIds,
       false,
     );
-
-    console.log('localEvents:', localEvents);
 
     const remainingEvents =
       await this.eventRepo.fetchPaginatedEventsExceptLocation(
@@ -129,7 +136,11 @@ export class UserWorkflows {
           event.userId,
         );
         let isFollowing = false;
+        let isInterested = false;
+        let isFavorited = false;
         if (followedOrganizerIds.includes(event.userId)) isFollowing = true;
+        if (interestedEventIds.includes(event.id)) isInterested = true;
+        if (favoritedEventIds.includes(event.id)) isFavorited = true;
         return {
           ...{
             ...event,
@@ -138,6 +149,8 @@ export class UserWorkflows {
             profilePic: profilePicUrl,
             ...stats,
             isFollowing,
+            isInterested,
+            isFavorited,
           },
         };
       }),
@@ -236,27 +249,61 @@ export class UserWorkflows {
   }
 
   async fetchInterestedEvents({ page, limit }, user: User) {
-    const result = await this.interestedByRepo.fetchPaginatedByUserId(
+    const events = await this.interestedByRepo.fetchPaginatedByUserId(
       user.id,
       (page - 1) * limit,
       limit,
     );
-    return { result: result };
+
+    const result = await Promise.all(
+      events.map(async (event) => {
+        const stats = await this.getEventStats(event.id);
+        const { username, profilePicUrl } = await this.userRepo.fetchById(
+          event.userId,
+        );
+        return {
+          ...{
+            ...event,
+            organizer: username,
+            profilePic: profilePicUrl,
+            organizer_id: event.userId,
+            ...stats,
+          },
+        };
+      }),
+    );
+
+    console.log(result);
+    return { currentPage: page, data: result };
   }
 
-  async fetchFavoritedEvents(user: User) {
-    const favourites = await this.favoritedByRepo.fetchByUserId(user.id);
+  async fetchFavoritedEvents({ page, limit }, user: User) {
+    const events = await this.favoritedByRepo.fetchPaginatedByUserId(
+      user.id,
+      (page - 1) * limit,
+      limit,
+    );
 
-    let favouriteEvents = [];
-    for (let index in favourites) {
-      const eventId = favourites[index].eventId;
-      const event = await this.eventRepo.fetchById(eventId);
-      favouriteEvents.push(event);
-    }
+    const result = await Promise.all(
+      events.map(async (event) => {
+        const stats = await this.getEventStats(event.id);
+        const { username, profilePicUrl } = await this.userRepo.fetchById(
+          event.userId,
+        );
+        return {
+          ...{
+            ...event,
+            organizer: username,
+            profilePic: profilePicUrl,
+            organizer_id: event.userId,
+            ...stats,
+          },
+        };
+      }),
+    );
 
-    return {
-      result: favouriteEvents,
-    };
+    console.log(result);
+    return { currentPage: page, data: result };
   }
 
   async deleteUser(userId: string) {

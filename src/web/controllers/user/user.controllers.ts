@@ -82,8 +82,8 @@ export class UserController {
 
   @Roles(Role.User)
   @Get('/favorited-events')
-  async fetchFavoritedEvents(@Req() req) {
-    return await this.wfs.fetchFavoritedEvents(req.user);
+  async fetchFavoritedEvents(@Req() req, @Query() query: PaginationParamDto) {
+    return await this.wfs.fetchFavoritedEvents(query, req.user);
   }
 
   @Roles(Role.Organizer)
