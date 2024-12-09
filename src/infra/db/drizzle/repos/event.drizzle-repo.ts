@@ -4,7 +4,7 @@ import {
   Provider,
 } from '@nestjs/common';
 import { DrizzleDB, InjectDb } from '../db-connection';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray, ne, notInArray, sql } from 'drizzle-orm';
 import { EventRepository } from 'src/domain/entities/event/event.repository';
 import { Event, SerializedEvent } from 'src/domain/entities/event/event.entity';
 import { eventTbl } from '../models/event.model';
@@ -79,21 +79,57 @@ class EventDrizzleRepo extends EventRepository {
     }
   }
 
-  async fetchPaginatedByOrgId(orgId: string, offset: number, limit: number) {
+  async fetchPaginatedByOrgId(orgIds: string[], offset: number, limit: number) {
     try {
       const event = await this.db
         .select()
         .from(eventTbl)
-        .where(eq(eventTbl.userId, orgId))
+        .where(inArray(eventTbl.userId, orgIds))
         .limit(limit)
         .offset(offset);
-      if (!event) {
-        throw new EventNotFound(orgId);
-      }
+
       return event; // returns the list of all events created by an organizer
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
+  }
+
+  async fetchPaginatedEventsByLocation(
+    location: string,
+    offset: number,
+    limit: number,
+  ) {
+    try {
+      const event = await this.db
+        .select()
+        .from(eventTbl)
+        .where(eq(eventTbl.city, location))
+        .limit(limit)
+        .offset(offset);
+
+      return event; // returns the list of all events created by an organizer
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  async fetchPaginatedEventsExceptLocation(
+    location: string,
+    offset: number,
+    limit: number,
+    excludeOrgIds: string[] = [],
+    except: boolean,
+  ) {
+    const condition = except
+      ? ne(eventTbl.city, location)
+      : eq(eventTbl.city, location);
+
+    return this.db
+      .select()
+      .from(eventTbl)
+      .where(and(condition, notInArray(eventTbl.userId, excludeOrgIds)))
+      .offset(offset)
+      .limit(limit);
   }
 }
 

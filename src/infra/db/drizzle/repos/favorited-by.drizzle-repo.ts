@@ -11,7 +11,10 @@ import {
 } from 'src/domain/entities/favorited-by/favorited-by.entity';
 import { FavoritedByRepository } from 'src/domain/entities/favorited-by/favorited-by.repository';
 import { favoritedByTbl } from '../models/favorited-by.model';
-import { FavoritedByNotFound } from 'src/domain/entities/favorited-by/favorited-by.errors';
+import {
+  FavoritedByAlreadyExists,
+  FavoritedByNotFound,
+} from 'src/domain/entities/favorited-by/favorited-by.errors';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
 
 @Injectable()
@@ -32,7 +35,7 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
       return result;
     } catch (e) {
       console.log(e.message);
-      throw new FavoritedByNotFound(entity.id);
+      throw new FavoritedByAlreadyExists(entity.userId, entity.eventId);
     }
   }
 

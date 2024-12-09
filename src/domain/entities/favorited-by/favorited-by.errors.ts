@@ -9,3 +9,15 @@ export class FavoritedByNotFound extends HttpException {
     else super(`Invalid Operation `, HttpStatus.CONFLICT);
   }
 }
+
+export class FavoritedByAlreadyExists extends HttpException {
+  constructor(
+    readonly userId: string,
+    readonly eventID: string,
+  ) {
+    super(
+      `User ${userId} is already interested in event ${eventID} `,
+      HttpStatus.CONFLICT,
+    );
+  }
+}

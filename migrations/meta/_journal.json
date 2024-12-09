@@ -85,6 +85,20 @@
       "when": 1733516719126,
       "tag": "0011_add_profile_pic_to_user",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1733701050897,
+      "tag": "0012_add unique constraint to follow table",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1733702390244,
+      "tag": "0013_add unique constraint to interstedBy + favoritedBy Tbls",
+      "breakpoints": true
     }
   ]
 }

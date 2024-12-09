@@ -98,6 +98,12 @@ export class UserController {
     return await this.wfs.getEvents(query, req.user);
   }
 
+  @Roles(Role.User)
+  @Get('/home')
+  async getHomepage(@Query() query: PaginationParamDto, @Req() req) {
+    return await this.wfs.getHomepage(query, req.user);
+  }
+
   @Delete('/delete')
   async deleteUser(@Req() req) {
     return await this.wfs.delete(req.user);

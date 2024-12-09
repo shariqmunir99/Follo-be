@@ -15,3 +15,15 @@ export class FollowNotFound extends HttpException {
     else super(`Invalid Operation `, HttpStatus.CONFLICT);
   }
 }
+
+export class FollowAlreadyExists extends HttpException {
+  constructor(
+    readonly followerId: string,
+    readonly followingId: string,
+  ) {
+    super(
+      `User ${followerId} is already following Organizer ${followingId} `,
+      HttpStatus.CONFLICT,
+    );
+  }
+}

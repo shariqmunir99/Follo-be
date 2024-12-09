@@ -8,7 +8,10 @@ import { and, eq, gt } from 'drizzle-orm';
 import { InterestedByRepository } from 'src/domain/entities/interested-by/interested-by.repository';
 import { InterestedBy } from 'src/domain/entities/interested-by/interested-by.entity';
 import { interestedByTbl } from '../models/interested-by.model';
-import { InterestedByNotFound } from 'src/domain/entities/interested-by/interested-by.errors';
+import {
+  InterestedByAlreadyExists,
+  InterestedByNotFound,
+} from 'src/domain/entities/interested-by/interested-by.errors';
 
 import { Event } from 'src/domain/entities/event/event.entity';
 import { UserRepository } from 'src/domain/entities/user/user.repository';
@@ -33,7 +36,7 @@ class InterestedByDrizzleRepo extends InterestedByRepository {
       const { ...result } = data;
       return result;
     } catch (e) {
-      throw new InterestedByNotFound(entity.id);
+      throw new InterestedByAlreadyExists(entity.userId, entity.eventId);
     }
   }
 

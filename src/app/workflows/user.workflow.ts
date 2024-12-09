@@ -21,6 +21,7 @@ import { VerifyRequestRepository } from 'src/domain/entities/verify-requests/ver
 import { ResetRequestRepository } from 'src/domain/entities/reset-requests/reset-request.repository';
 import { MailService } from '../services/auth-services/email.service';
 import { VerifyRequest } from 'src/domain/entities/verify-requests/verify-request.entity';
+import { statSync } from 'fs';
 
 @Injectable()
 export class UserWorkflows {
@@ -66,7 +67,7 @@ export class UserWorkflows {
 
   async getEvents({ page, limit }: PaginationParamDto, user: User) {
     const events = await this.eventRepo.fetchPaginatedByOrgId(
-      user.id,
+      [user.id],
       (page - 1) * limit,
       limit,
     );
@@ -88,6 +89,65 @@ export class UserWorkflows {
     );
 
     return { data: results, currentPage: page };
+  }
+
+  async getHomepage({ page, limit }: PaginationParamDto, user: User) {
+    const following = await this.followRepo.fetchFollowing(user.id);
+    const followedOrganizerIds = following.map((f) => f.followingId);
+
+    const followedEvents = await this.eventRepo.fetchPaginatedByOrgId(
+      followedOrganizerIds,
+      0,
+      Number.MAX_SAFE_INTEGER,
+    );
+
+    const localEvents = await this.eventRepo.fetchPaginatedEventsExceptLocation(
+      user.location,
+      0,
+      Number.MAX_SAFE_INTEGER,
+      followedOrganizerIds,
+      false,
+    );
+
+    console.log('localEvents:', localEvents);
+
+    const remainingEvents =
+      await this.eventRepo.fetchPaginatedEventsExceptLocation(
+        user.location,
+        0,
+        Number.MAX_SAFE_INTEGER,
+        followedOrganizerIds,
+        true,
+      );
+
+    const allEvents = [...followedEvents, ...localEvents, ...remainingEvents];
+
+    const sortedEvents = await Promise.all(
+      allEvents.map(async (event) => {
+        const stats = await this.getEventStats(event.id);
+        const { profilePicUrl, username } = await this.userRepo.fetchById(
+          event.userId,
+        );
+        let isFollowing = false;
+        if (followedOrganizerIds.includes(event.userId)) isFollowing = true;
+        return {
+          ...{
+            ...event,
+            organizer_id: event.userId,
+            organizer: username,
+            profilePic: profilePicUrl,
+            ...stats,
+            isFollowing,
+          },
+        };
+      }),
+    );
+
+    const offset = (page - 1) * limit;
+
+    const paginatedEvents = sortedEvents.slice(offset, offset + limit);
+    console.log('Result Homepage');
+    return { currentPage: page, data: paginatedEvents };
   }
 
   async getProfile(user: User) {
@@ -151,7 +211,6 @@ export class UserWorkflows {
     const favoriteCount = favorites.length;
 
     const interests = await this.interestedByRepo.fetchByUserId(userId);
-    console.log('Im here');
     const interestsCount = interests.length;
 
     const follow = await this.followRepo.fetchFollowing(userId);

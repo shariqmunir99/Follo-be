@@ -1,0 +1,2 @@
+ALTER TABLE "favorited-by" ADD CONSTRAINT "favorited-by_userId_eventId_unique" UNIQUE("userId","eventId");--> statement-breakpoint
+ALTER TABLE "interested-by" ADD CONSTRAINT "interested-by_userId_eventId_unique" UNIQUE("userId","eventId");

@@ -9,3 +9,15 @@ export class InterestedByNotFound extends HttpException {
     else super(`Invalid Operation `, HttpStatus.CONFLICT);
   }
 }
+
+export class InterestedByAlreadyExists extends HttpException {
+  constructor(
+    readonly userId: string,
+    readonly eventID: string,
+  ) {
+    super(
+      `User ${userId} is already interested in event ${eventID} `,
+      HttpStatus.CONFLICT,
+    );
+  }
+}

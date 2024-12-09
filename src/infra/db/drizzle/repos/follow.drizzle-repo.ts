@@ -12,7 +12,10 @@ import {
   SerializedFollow,
 } from 'src/domain/entities/follow/follow.entity';
 import { followTbl } from '../models/follow.model';
-import { FollowNotFound } from 'src/domain/entities/follow/follow.errors';
+import {
+  FollowAlreadyExists,
+  FollowNotFound,
+} from 'src/domain/entities/follow/follow.errors';
 
 @Injectable()
 class FollowDrizzleRepo extends FollowRepository {
@@ -28,7 +31,7 @@ class FollowDrizzleRepo extends FollowRepository {
       const { ...result } = data;
       return result;
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw new FollowAlreadyExists(entity.followerId, entity.followingId);
     }
   }
 
