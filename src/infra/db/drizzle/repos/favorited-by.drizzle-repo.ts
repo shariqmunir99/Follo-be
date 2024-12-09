@@ -34,7 +34,6 @@ class FavoritedByDrizzleRepo extends FavoritedByRepository {
       const { ...result } = data;
       return result;
     } catch (e) {
-      console.log(e.message);
       throw new FavoritedByAlreadyExists(entity.userId, entity.eventId);
     }
   }
