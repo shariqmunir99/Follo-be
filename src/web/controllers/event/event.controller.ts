@@ -107,7 +107,8 @@ export class EventController {
   //Only a user can access this route.
   @Roles(Role.User)
   @Delete('/interested-by')
-  async deleteInterestedBy(@Body() body: InteractionDto, @Req() req) {
+  async deleteInterestedBy(@Query() body: InteractionDto, @Req() req) {
+    console.log('Here');
     return await this.wfs.deletefromInterestedByListOfEvent(body, req.user);
   }
 
@@ -131,7 +132,7 @@ export class EventController {
   //Only a user can access this route.
   @Roles(Role.User)
   @Delete('/favorited-by')
-  async deleteFavoritedBy(@Body() body: InteractionDto, @Req() req) {
+  async deleteFavoritedBy(@Query() body: InteractionDto, @Req() req) {
     return await this.wfs.deletefromFavoritedByListOfEvent(body, req.user);
   }
 }

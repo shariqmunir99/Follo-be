@@ -6,6 +6,7 @@ import { UserRepository } from 'src/domain/entities/user/user.repository';
 import {
   EditProfileDto,
   FollowDto,
+  OrganizerProfileDto,
   PaginationParamDto,
   VerifyDto,
 } from '../dtos/user.dto';
@@ -90,6 +91,15 @@ export class UserWorkflows {
     );
 
     return { data: results, currentPage: page };
+  }
+
+  async fetchOrganizerProfile({
+    page,
+    limit,
+    organizer_id,
+  }: OrganizerProfileDto) {
+    const organizer = await this.userRepo.fetchById(organizer_id);
+    return await this.getEvents({ page, limit }, organizer);
   }
 
   async getHomepage({ page, limit }: PaginationParamDto, user: User) {

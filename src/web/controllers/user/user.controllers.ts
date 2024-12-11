@@ -18,6 +18,7 @@ import { query } from 'express';
 import {
   EditProfileDto,
   FollowDto,
+  OrganizerProfileDto,
   PaginationParamDto,
   VerifyDto,
 } from 'src/app/dtos/user.dto';
@@ -60,6 +61,18 @@ export class UserController {
   @Get('/details')
   async getProfile(@Req() req) {
     return await this.wfs.getProfile(req.user);
+  }
+
+  @Roles(Role.User)
+  @Get('/organizer-profile')
+  async fetchOrgProfile(@Query() query: OrganizerProfileDto) {
+    return await this.wfs.fetchOrganizerProfile(query);
+  }
+
+  @Roles(Role.User)
+  @Get('/organizer-stats')
+  async fetchOrgStats(@Query() query: FollowDto) {
+    return await this.wfs.getOrganizerStats(query.organizer_id);
   }
 
   @Roles(Role.User)
